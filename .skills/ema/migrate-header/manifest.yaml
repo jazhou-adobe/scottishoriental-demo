@@ -1,0 +1,4 @@
+skill: migrate-header
+version: 1.0.0
+description: Migrate header/navigation to EDS (one subagent)
+author: aemcoder

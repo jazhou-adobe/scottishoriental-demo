@@ -1,0 +1,203 @@
+# `:root` token contract
+
+Every prototype and every migrated page renders against the project-root
+`DESIGN.md` tokens, exposed as CSS custom properties on `:root`. The
+contract below is the **interface** between stardust's renderers and
+any downstream consumer (`stardust:deploy`/`stardust:rollout` for EDS, a framework component
+library, a design handoff).
+
+Carried from stardust v1 (design-guide.md) and aligned with
+impeccable's DESIGN.md token names.
+
+## The block
+
+Every prototype's `<style>` block must start with a `:root` block
+exposing the desktop tokens:
+
+```css
+:root {
+  --heading-font-family: 'Brand Heading', serif;
+  --body-font-family:    'Brand Body', sans-serif;
+
+  --heading-xxl: 72px;
+  --heading-xl:  56px;
+  --heading-lg:  40px;
+  --heading-md:  28px;
+  --body:        18px;
+  --body-sm:     15px;
+
+  --line-height-heading: 1.1;
+  --line-height-body:    1.55;
+
+  --color-bg:     /* DESIGN.md colors.background */;
+  --color-fg:     /* DESIGN.md colors.text-primary */;
+  --color-accent: /* DESIGN.md colors.primary */;
+
+  --spacing-xs:  4px;
+  --spacing-sm:  8px;
+  --spacing-md:  16px;
+  --spacing-lg:  24px;
+  --spacing-xl:  48px;
+  --spacing-2xl: 96px;
+
+  --section-padding: 96px;
+  --max-width:       1200px;
+  --radius:          8px;
+}
+```
+
+The block above is the **minimum**. Pages may add more tokens (e.g.
+`--shadow-card`, `--gradient-hero`) but every name above must be
+present, with a value either inherited from DESIGN.md or computed
+deterministically from a value that is.
+
+## Optional: motion tokens (cinematic prototypes only)
+
+When `prototype --cinematic` renders a page, the `:root` block
+additionally exposes the motion vocabulary from
+`DESIGN.json.extensions.motion`:
+
+```css
+:root {
+  /* ...static tokens... */
+
+  /* Motion (cinematic only) */
+  --ease-out-cubic: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-out-quart: cubic-bezier(0.42, 0, 0, 1);
+  --ease-expo:      cubic-bezier(0.16, 1, 0.3, 1);
+  --enter-duration: 700ms;
+  --enter-stagger:  90ms;
+  --parallax-translate: 35;          /* used as `<value>vh` in transforms */
+  --parallax-fade:      0.55;
+  --parallax-progress:  0;           /* JS-driven; 0–1 */
+}
+```
+
+These motion tokens follow the same contract: written by the
+renderer, sourced from `DESIGN.json.extensions.motion`, exposed at
+`:root` so any CSS rule or downstream consumer can read them.
+
+When `DESIGN.json.extensions.motion.register` is absent (static
+prototype), the motion tokens are omitted from `:root`. A future
+consumer that needs to detect "is this a cinematic file" can probe
+for `--ease-out-cubic` on `:root`.
+
+The motion vocabulary is **register-specific** — values vary per
+the active register (per `skills/prototype/reference/motion-registers.md`
+§ The five registers § Token defaults). The names stay constant.
+
+## Sourcing the values from DESIGN.md
+
+Every token in the block above maps back to a DESIGN.md frontmatter
+key. The agent populates the `:root` block by reading `DESIGN.md` and
+applying the mapping below.
+
+| `:root` token              | DESIGN.md source                                      |
+|----------------------------|-------------------------------------------------------|
+| `--heading-font-family`    | `typography.<headingRole>.fontFamily`                 |
+| `--body-font-family`       | `typography.<bodyRole>.fontFamily`                    |
+| `--heading-xxl`...`--heading-md` | `typography.heading-*.fontSize` (or computed scale) |
+| `--body`, `--body-sm`      | `typography.body.fontSize`, `typography.body-sm.fontSize` |
+| `--line-height-heading`    | `typography.<headingRole>.lineHeight`                 |
+| `--line-height-body`       | `typography.<bodyRole>.lineHeight`                    |
+| `--color-bg`               | `colors.<background-role-name>`                       |
+| `--color-fg`               | `colors.<text-primary-role-name>`                     |
+| `--color-accent`           | `colors.<primary-role-name>`                          |
+| `--spacing-xs`...`--spacing-2xl` | `spacing.xs`...`spacing.2xl` (Stitch keys)      |
+| `--section-padding`        | `spacing.section` (or `spacing.2xl` if absent)        |
+| `--max-width`              | DESIGN.json `extensions.breakpoints.containerMaxWidth` |
+| `--radius`                 | `rounded.primary` (Stitch key)                        |
+
+Color role names are **brand-native** per the divergence-toolkit § 4
+rule. The agent references them by their actual role name in DESIGN.md
+(`Pomodoro`, `Vault`, `Zenith`) when building the `:root` block, with
+a comment showing the role name above the token.
+
+## Sizing `--max-width`
+
+The `1200px` in the example block is illustrative, not normative —
+stardust ships **no default container width**. Derive it per project:
+
+1. **Captured surface first** (Mode A, per `direct/SKILL.md`).
+   Inherit the captured container when it holds up. When it reads
+   dated at modern viewports (≤1024px is the usual smell), widen
+   **one step within the site's own framework vocabulary** —
+   Bootstrap 960 → 1140, Tailwind `max-w-5xl` → `max-w-6xl`/`7xl` —
+   never jump to a generic number.
+2. **Measure-first when the capture has no measurable container**
+   (rebrand / signal-thin capture without one). Body prose caps at
+   65–75ch regardless of container, so grids and heroes size it: a
+   3-up card grid wants ~1100–1300px (cards at 340–400px), converging
+   on **1200–1280px** for marketing surfaces. Widths past ~1320px
+   need deliberate inner columns, not a wider text block.
+3. **Record the choice.** Persist the derived value to DESIGN.json
+   `extensions.breakpoints.containerMaxWidth` (the sourcing table
+   above) so `migrate` re-derives the same width. A change from the
+   captured value needs no divergence justification, but it must be
+   visible: flag it in the page-shape brief's `## Layout strategy`
+   (and `## Open questions for craft` when the step-up is debatable)
+   so the reviewer can veto it before render.
+
+## Why these names
+
+The `--heading-*` / `--body-*` / `--color-*` / `--spacing-*` token
+families predate impeccable's DESIGN.md format and are familiar to
+designers across multiple Adobe-internal redesign projects. Stardust
+preserves them for continuity. Impeccable's Stitch tokens
+(`typography.heading-xxl.fontSize`, `colors.warm-ash-cream`,
+`spacing.lg`) are the *source*; the `:root` block is the *interface*.
+
+A future tool that wants to consume stardust's output reads the `:root`
+block, not DESIGN.md, because the `:root` block is one stable
+vocabulary across all prototypes and migrated pages.
+
+## Per-section overrides
+
+Local tokens may override the root for a single section:
+
+```css
+section[data-section="hero"] {
+  --color-bg: var(--color-accent);   /* hero uses the accent as ground */
+  --color-fg: var(--color-bg);       /* and the ground as text — read DESIGN.md to make sure this contrast passes */
+}
+```
+
+Per-section overrides must respect impeccable's contrast rules (WCAG
+AA min) and be reasoned in the prototype's provenance comment. They
+are normal — the token contract is the **inheritance default**, not a
+ceiling.
+
+## Editability
+
+Designs are rendered to be **edited in place** inside the prototype's
+HTML file. When the user gives feedback during iteration:
+
+- Change `:root` values for global tweaks (type scale, spacing,
+  radius). Re-render and refresh.
+- Change per-section style for local tweaks. Re-render and refresh.
+- A change persists into DESIGN.md when the user approves the
+  prototype (during the approval step, the agent diffs the prototype's
+  `:root` against DESIGN.md and proposes patches; the user accepts or
+  rejects per token).
+
+## What this contract is **not**
+
+- It is not the entire visual system. It is the **token interface**.
+  Components, motion, breakpoints, and component-specific tokens live
+  in DESIGN.md / DESIGN.json and feed the contract.
+- It is not a framework choice. Tokens render fine in any framework
+  that supports CSS custom properties (every modern one).
+- It is not negotiable. A prototype without the `:root` block above
+  is non-compliant; `prototype` refuses to mark such a page
+  `prototyped`.
+
+## Who reads, who writes
+
+- **`prototype`** writes the `:root` block as the first child of the
+  proposed page's `<style>`. Refuses without it.
+- **`migrate`** writes the same block on every migrated page,
+  re-derived from the latest DESIGN.md so token edits propagate.
+- **`extract`** does not touch this block (extract describes the
+  current site, which has its own arbitrary tokens).
+- Downstream consumers (e.g., `stardust:deploy`) read the block from
+  migrated pages as the canonical token interface.
