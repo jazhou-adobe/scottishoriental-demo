@@ -36,17 +36,19 @@ header nav[aria-expanded='true'] {
     position: relative;
   }
 
-  header nav {
-    display: flex;
-    justify-content: space-between;
-    gap: 0 32px;
-    max-width: 1264px;
-    padding: 0 32px;
-  }
-
+  header nav,
   header nav[aria-expanded='true'] {
+    display: grid;
+    grid-template:
+      'brand tools' auto
+      'brand sections' auto / auto 1fr;
+    align-items: center;
+    gap: 0 40px;
+    max-width: 1264px;
+    height: auto;
     min-height: 0;
     overflow: visible;
+    padding: 18px 32px;
   }
 }
 
@@ -175,7 +177,7 @@ header nav .nav-sections ul {
 }
 
 header nav .nav-sections ul > li {
-  font-weight: 500;
+  font-weight: 400;
 }
 
 header nav .nav-sections ul > li > ul {
@@ -199,28 +201,12 @@ header nav .nav-sections ul > li > ul > li {
 
   header nav .nav-sections .nav-drop {
     position: relative;
-    padding-right: 16px;
+    padding-right: 0;
     cursor: pointer;
   }
 
   header nav .nav-sections .nav-drop::after {
-    content: '';
-    display: inline-block;
-    position: absolute;
-    top: 0.5em;
-    right: 2px;
-    transform: rotate(135deg);
-    width: 6px;
-    height: 6px;
-    border: 2px solid currentcolor;
-    border-radius: 0 1px 0 0;
-    border-width: 2px 2px 0 0;
-  }
-
-  header nav .nav-sections .nav-drop[aria-expanded='true']::after {
-    top: unset;
-    bottom: 0.5em;
-    transform: rotate(315deg);
+    display: none;
   }
 
   header nav .nav-sections ul {
@@ -239,12 +225,14 @@ header nav .nav-sections ul > li > ul > li {
     position: relative;
   }
 
-  header nav .nav-sections .default-content-wrapper > ul > li[aria-expanded='true'] > ul {
+  header nav .nav-sections .default-content-wrapper > ul > li[aria-expanded='true'] > ul,
+  header nav .nav-sections .default-content-wrapper > ul > li.nav-drop:hover > ul,
+  header nav .nav-sections .default-content-wrapper > ul > li.nav-drop:focus-within > ul {
     display: block;
     position: absolute;
     left: -24px;
     width: 200px;
-    top: 150%;
+    top: 100%;
     padding: 16px;
     background-color: var(--light-color);
     white-space: initial;
@@ -284,12 +272,31 @@ header nav .nav-sections a:any-link {
 }
 
 @media (width >= 900px) {
-  header nav .nav-sections { margin-left: auto; }
-  header nav .nav-tools { margin-left: 32px; }
+  header nav .nav-brand {
+    grid-area: brand;
+    align-self: center;
+  }
+
+  header nav .nav-brand img { height: 60px; }
+
+  header nav .nav-sections {
+    grid-area: sections;
+    align-self: start;
+  }
+
+  header nav .nav-tools {
+    grid-area: tools;
+    place-self: end stretch;
+    margin: 0 0 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgb(57 40 116 / 25%);
+  }
 }
 
 @media (width >= 900px) {
-  header nav .nav-sections .default-content-wrapper > ul > li[aria-expanded='true'] > ul {
+  header nav .nav-sections .default-content-wrapper > ul > li[aria-expanded='true'] > ul,
+  header nav .nav-sections .default-content-wrapper > ul > li.nav-drop:hover > ul,
+  header nav .nav-sections .default-content-wrapper > ul > li.nav-drop:focus-within > ul {
     width: max-content;
     min-width: 240px;
     background-color: #fff;
@@ -306,6 +313,7 @@ header nav .nav-sections a:any-link {
 /* tools: FSSA logo + search icon */
 header nav .nav-tools .default-content-wrapper {
   display: flex;
+  justify-content: flex-end;
   align-items: center;
   gap: 20px;
 }

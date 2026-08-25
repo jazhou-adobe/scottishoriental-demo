@@ -1,0 +1,57 @@
+.form.block {
+  max-width: var(--section-max-width);
+  margin: 0 auto;
+}
+
+.form.block .hs-form-html {
+  width: 100%;
+}
+
+/* Two-column field layout on wide screens, matching source */
+.form.block form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+}
+
+.form.block form .hs-form-field,
+.form.block form fieldset {
+  flex: 1 1 100%;
+  max-width: 100%;
+  margin: 0;
+}
+
+@media (width >= 768px) {
+  .form.block form .hs-form-field {
+    flex: 1 1 calc(50% - 12px);
+  }
+}
+
+.form.block input[type='text'],
+.form.block input[type='email'],
+.form.block select,
+.form.block textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  font: inherit;
+}
+
+.form.block .hs-button,
+.form.block input[type='submit'] {
+  background-color: var(--brand-purple);
+  color: #fff;
+  border: 0;
+  border-radius: 2px;
+  padding: 12px 28px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.form.block .hs-button:hover,
+.form.block input[type='submit']:hover {
+  filter: brightness(1.1);
+}

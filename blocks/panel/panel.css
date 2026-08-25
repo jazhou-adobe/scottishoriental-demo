@@ -5,6 +5,40 @@ main .section.panel-container {
   padding: 48px 0;
 }
 
+/* T19: register-variant panel sits on a white ground (source);
+   other panels (risk factors, ISA millionaire) keep the teal band */
+main .section.panel-container:has(.panel.register) {
+  background-color: #fff;
+  color: var(--text-color);
+}
+
+/* T22: risk-factors body wraps earlier than source; nudge the body size
+   down a step so the line-length matches (source line 1 ends
+   "significantly less than") */
+.panel p {
+  font-size: var(--body-font-size-s);
+}
+
+/* T21: the ISA-millionaire "Find out more" (em > a, decorated as
+   a.button.secondary) is a plain text link in source, not a bordered
+   button. Only inside panel-media, so register/other CTAs are untouched */
+.panel .panel-media a.button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--brand-purple);
+  font-size: inherit;
+  font-weight: inherit;
+  text-decoration: none;
+}
+
+.panel .panel-media a.button:hover,
+.panel .panel-media a.button:focus-visible {
+  background: transparent;
+  color: var(--brand-purple);
+  text-decoration: underline;
+}
+
 .panel h2 {
   margin-top: 0;
 }

@@ -5,8 +5,8 @@ footer {
 }
 
 footer a:any-link {
-  color: var(--brand-purple);
-  text-decoration: none;
+  color: #1a6aa3;
+  text-decoration: underline;
 }
 
 footer a:hover {

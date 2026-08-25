@@ -59,3 +59,57 @@ main .section.columns-container:has(.columns.intro) > div {
     gap: 40px;
   }
 }
+
+/* ===== intro Brightcove video facade ===== */
+.columns.intro .intro-video {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #000;
+}
+
+.columns.intro .intro-video picture,
+.columns.intro .intro-video img,
+.columns.intro .intro-video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+}
+
+.columns.intro .intro-video-play {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 68px;
+  height: 68px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 92%);
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.columns.intro .intro-video-play::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 54%;
+  width: 0;
+  height: 0;
+  transform: translate(-50%, -50%);
+  border-style: solid;
+  border-width: 12px 0 12px 20px;
+  border-color: transparent transparent transparent var(--brand-purple);
+}
+
+.columns.intro .intro-video-play:hover,
+.columns.intro .intro-video-play:focus-visible {
+  background: #fff;
+  transform: scale(1.08);
+}

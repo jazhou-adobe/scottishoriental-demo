@@ -28,20 +28,28 @@
 
 /* stylelint-disable no-descending-specificity */
 
-/* ===== stats variant ===== */
+/* ===== stats variant (dark purple band) ===== */
+main .section.cards-container:has(.cards.stats) {
+  background-color: var(--brand-purple);
+  margin: 0;
+  padding: 56px 0;
+}
+
 .cards.stats > ul {
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
 }
 
 .cards.stats > ul > li {
   border: 0;
-  background-color: var(--panel-teal);
-  padding: 28px 24px;
+  background-color: #453d84;
+  color: #fff;
+  padding: 32px 28px;
 }
 
 .cards.stats > ul > li:first-child {
   background-color: var(--brand-teal);
-  color: #fff;
+  color: var(--brand-purple);
 }
 
 .cards.stats .cards-card-body {
@@ -49,22 +57,46 @@
 }
 
 .cards.stats li img {
-  width: 56px;
-  height: 56px;
+  width: 68px;
+  height: 68px;
   aspect-ratio: auto;
   object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.cards.stats > ul > li:first-child img {
+  filter: brightness(0) saturate(100%) invert(14%) sepia(49%) saturate(2077%) hue-rotate(243deg) brightness(94%) contrast(96%);
+}
+
+.cards.stats .cards-card-body strong {
+  display: block;
+  font-size: clamp(40px, 5vw, 56px);
+  font-weight: 700;
+  line-height: 1.05;
+  margin: 4px 0;
 }
 
 .cards.stats h3 {
   font-size: 30px;
   font-weight: 600;
-  color: var(--brand-purple);
-  margin: 12px 0 6px;
+  color: inherit;
+  margin: 8px 0 6px;
 }
 
-.cards.stats > ul > li:first-child h3 { color: #fff; }
-.cards.stats > ul > li:first-child a { color: #fff; }
-.cards.stats p { margin: 4px 0; }
+.cards.stats a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.cards.stats > ul > li:first-child h3,
+.cards.stats > ul > li:first-child a,
+.cards.stats > ul > li:first-child strong {
+  color: var(--brand-purple);
+}
+
+.cards.stats p {
+  margin: 4px 0;
+}
 
 /* ===== links variant (teal band) ===== */
 main .section.cards-container:has(.cards.links) {
@@ -99,39 +131,103 @@ main .section.cards-container:has(.cards.links) {
 }
 
 /* ===== insights variant ===== */
+main .section.cards-container:has(.cards.insights) {
+  background-color: #fafafa;
+}
+
 .cards.insights > ul {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
 }
 
 .cards.insights > ul > li {
-  border: 1px solid #e2e2e2;
-  border-radius: 6px;
-  overflow: hidden;
+  position: relative;
+  border: 0;
+  background-color: #fafafa;
+  overflow: visible;
 }
 
-.cards.insights .cards-card-body { margin: 20px; }
+.cards.insights .cards-card-image {
+  position: relative;
+  line-height: 0;
+}
 
-.cards.insights .cards-card-body > p:first-child a {
+.cards.insights .cards-card-image img {
+  width: 100%;
+  aspect-ratio: 399 / 220;
+  object-fit: cover;
+}
+
+/* category pill overlaid on bottom-left of the image (relocated here by cards.js) */
+.cards.insights .cards-card-image > p {
+  position: absolute;
+  left: 0;
+  bottom: 14px;
+  z-index: 2;
+  margin: 0;
+  line-height: 1;
+}
+
+.cards.insights .cards-card-image p a {
   display: inline-block;
   background-color: var(--brand-purple);
   color: #fff;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
-  padding: 4px 12px;
-  border-radius: 20px;
+  padding: 8px 16px;
+  border-radius: 2px;
   text-decoration: none;
 }
 
+.cards.insights .cards-card-body {
+  margin: 0;
+  padding: 18px 0 0;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
 .cards.insights h3 {
-  font-size: 20px;
-  margin: 12px 0 8px;
+  font-size: 24px;
+  line-height: 1.3;
+  margin: 8px 0;
 }
 
 .cards.insights h3 a {
-  color: var(--brand-purple);
+  color: rgb(33 78 111);
   text-decoration: none;
 }
 
 .cards.insights h3 a:hover {
   text-decoration: underline;
+}
+
+/* date line: the paragraph immediately after the heading */
+.cards.insights h3 + p {
+  margin: 0 0 14px;
+  font-size: 16px;
+  color: #5a5a5a;
+}
+
+/* find out more link */
+.cards.insights .cards-card-body > p:last-child a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #1a6ca8;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.cards.insights .cards-card-body > p:last-child a::before {
+  content: "\2192";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1.5px solid currentcolor;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700;
+  flex: 0 0 auto;
 }

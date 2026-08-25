@@ -10,6 +10,11 @@ export default function decorate(block) {
       if (div.children.length === 1 && div.querySelector('picture')) div.className = 'cards-card-image';
       else div.className = 'cards-card-body';
     });
+    if (block.classList.contains('insights')) {
+      const image = li.querySelector('.cards-card-image');
+      const pill = li.querySelector('.cards-card-body > p:first-child');
+      if (image && pill) image.append(pill);
+    }
     ul.append(li);
   });
   ul.querySelectorAll('picture > img').forEach((img) => img.closest('picture').replaceWith(createOptimizedPicture(img.src, img.alt, false, [{ width: '750' }])));
