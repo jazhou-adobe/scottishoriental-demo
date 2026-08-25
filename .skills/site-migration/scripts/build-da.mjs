@@ -41,8 +41,13 @@ out('footer.html', wrap(draft(CONFIG.footer).trimEnd()));
 
 // guard rails
 const p = readFileSync(new URL(`deploy/${pageSlug}.html`, ROOT), 'utf8');
+// DA only sideloads ABSOLUTE http(s) image URLs. A root-relative <img src="/..">
+// (even one committed to the code bus that 200s on curl) becomes about:error on
+// the content-bus page — it fails silently past HTTP/curl checks. Reject it here.
+const rootRelImgs = [...p.matchAll(/<img\b[^>]*\bsrc="(\/(?!\/)[^"]*)"/g)].map((m) => m[1]);
 console.log('checks:',
   ['<main>', '</main>'].every((s) => p.includes(s)) ? 'skeleton OK' : 'SKELETON MISSING',
   !p.includes('./images/') ? '| no local imgs' : '| LOCAL IMGS REMAIN',
-  !p.includes('/drafts/nav') ? '| override stripped' : '| OVERRIDE REMAINS');
+  !p.includes('/drafts/nav') ? '| override stripped' : '| OVERRIDE REMAINS',
+  rootRelImgs.length === 0 ? '| imgs absolute' : `| ROOT-RELATIVE IMG (DA cannot sideload — use absolute http(s) URL): ${rootRelImgs.join(', ')}`);
 console.log(`wrote deploy/{${pageSlug},nav,footer}.html`);
