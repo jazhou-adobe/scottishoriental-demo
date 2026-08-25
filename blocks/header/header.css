@@ -150,8 +150,8 @@ header .nav-brand {
 }
 
 header nav .nav-brand img {
-  width: 128px;
-  height: auto;
+  width: auto;
+  height: 46px;
 }
 
 /* sections */
@@ -284,6 +284,11 @@ header nav .nav-sections a:any-link {
 }
 
 @media (width >= 900px) {
+  header nav .nav-sections { margin-left: auto; }
+  header nav .nav-tools { margin-left: 32px; }
+}
+
+@media (width >= 900px) {
   header nav .nav-sections .default-content-wrapper > ul > li[aria-expanded='true'] > ul {
     width: max-content;
     min-width: 240px;
@@ -298,17 +303,24 @@ header nav .nav-sections a:any-link {
   }
 }
 
-/* tools: subscribe button */
-header nav .nav-tools a:any-link {
-  display: inline-block;
-  background-color: var(--brand-purple);
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 4px;
-  font-weight: 500;
-  text-decoration: none;
+/* tools: FSSA logo + search icon */
+header nav .nav-tools .default-content-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
-header nav .nav-tools a:hover {
-  background-color: var(--brand-purple-dark);
+header nav .nav-tools p { margin: 0; }
+
+header nav .nav-tools img {
+  height: 26px;
+  width: auto;
 }
+
+header nav .nav-tools .icon-search {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+}
+
+header nav .nav-tools .icon-search svg { fill: var(--brand-purple); }

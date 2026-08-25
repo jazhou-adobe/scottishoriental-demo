@@ -31,3 +31,31 @@
     order: unset;
   }
 }
+
+/* ===== intro card overlapping the hero ===== */
+main .section.columns-container:has(.columns.intro) > div {
+  max-width: var(--section-max-width);
+  padding: 0 24px;
+}
+
+.columns.intro {
+  background-color: var(--panel-teal);
+  margin-top: -80px;
+  padding: 36px;
+  position: relative;
+  z-index: 3;
+}
+
+.columns.intro h2 { margin-top: 0; }
+
+.columns.intro .columns-img-col img {
+  display: block;
+  border-radius: 2px;
+}
+
+@media (width >= 900px) {
+  .columns.intro {
+    padding: 44px;
+    gap: 40px;
+  }
+}

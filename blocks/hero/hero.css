@@ -33,7 +33,7 @@
   inset: 0;
   z-index: 1;
   background:
-    linear-gradient(100deg, rgb(57 40 116 / 78%) 0%, rgb(57 40 116 / 42%) 40%, rgb(39 186 201 / 18%) 78%, rgb(39 186 201 / 8%) 100%);
+    linear-gradient(90deg, rgb(57 40 116 / 72%) 0%, rgb(57 40 116 / 46%) 28%, rgb(57 40 116 / 14%) 52%, rgb(39 186 201 / 6%) 100%);
 }
 
 .hero > div {
@@ -49,6 +49,7 @@
   max-width: 900px;
   margin: 0 auto 0 0;
   color: #fff;
+  font-size: clamp(32px, 5vw, 56px);
 }
 
 .hero p {
@@ -70,5 +71,3 @@
 }
 
 .hero.hero-plain::before { display: none; }
-
-.hero h1 { font-size: clamp(32px, 5vw, 56px); }

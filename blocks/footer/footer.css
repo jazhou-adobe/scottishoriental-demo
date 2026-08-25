@@ -1,11 +1,11 @@
 footer {
-  background-color: var(--brand-purple);
-  color: #fff;
+  background-color: var(--panel-teal);
+  color: var(--brand-purple);
   font-size: var(--body-font-size-s);
 }
 
 footer a:any-link {
-  color: #fff;
+  color: var(--brand-purple);
   text-decoration: none;
 }
 
@@ -14,14 +14,14 @@ footer a:hover {
 }
 
 footer h3 {
-  color: #fff;
+  color: var(--brand-purple);
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 8px;
 }
 
 footer .columns > div {
-  gap: 32px;
+  gap: 40px;
   align-items: start;
 }
 
@@ -35,26 +35,31 @@ footer .columns li {
   padding: 4px 0;
 }
 
+footer .columns img {
+  width: auto;
+  max-height: 56px;
+}
+
 footer .footer > div {
   margin: auto;
   max-width: 1200px;
-  padding: 40px 24px 24px;
+  padding: 48px 24px 24px;
 }
 
 footer .footer p {
-  margin: 0;
+  margin: 0 0 8px;
 }
 
 footer .footer > div > p:last-child {
   margin-top: 32px;
   padding-top: 16px;
-  border-top: 1px solid rgb(255 255 255 / 25%);
+  border-top: 1px solid rgb(57 40 116 / 20%);
   font-size: var(--body-font-size-xs);
-  color: rgb(255 255 255 / 80%);
+  color: rgb(5 35 50 / 75%);
 }
 
 @media (width >= 900px) {
   footer .footer > div {
-    padding: 40px 32px 24px;
+    padding: 48px 32px 24px;
   }
 }
