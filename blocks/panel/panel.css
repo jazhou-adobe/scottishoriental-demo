@@ -1,0 +1,47 @@
+/* full-bleed light-teal band */
+main .section.panel-container {
+  background-color: var(--panel-teal);
+  margin: 0;
+  padding: 48px 0;
+}
+
+.panel h2 {
+  margin-top: 0;
+}
+
+.panel > div > div > :first-child {
+  margin-top: 0;
+}
+
+.panel > div > div > :last-child {
+  margin-bottom: 0;
+}
+
+/* media + text row */
+.panel .panel-media {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+}
+
+.panel .panel-media .panel-media-col {
+  flex: 0 0 auto;
+  line-height: 0;
+}
+
+.panel .panel-media .panel-media-col img {
+  width: 180px;
+  height: auto;
+}
+
+@media (width >= 900px) {
+  .panel .panel-media {
+    flex-direction: row;
+    gap: 40px;
+  }
+
+  .panel .panel-media > div:not(.panel-media-col) {
+    flex: 1;
+  }
+}

@@ -5,23 +5,20 @@
 
 .hero {
   position: relative;
-  padding: 40px 24px;
-  min-height: 300px;
-}
-
-.hero h1 {
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  color: var(--background-color);
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 64px 24px;
+  min-height: 420px;
+  overflow: hidden;
 }
 
 .hero picture {
   position: absolute;
-  z-index: -1;
+  z-index: 0;
   inset: 0;
-  object-fit: cover;
-  box-sizing: border-box;
 }
 
 .hero img {
@@ -30,8 +27,48 @@
   height: 100%;
 }
 
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(100deg, rgb(57 40 116 / 78%) 0%, rgb(57 40 116 / 42%) 40%, rgb(39 186 201 / 18%) 78%, rgb(39 186 201 / 8%) 100%);
+}
+
+.hero > div {
+  position: relative;
+  z-index: 2;
+  max-width: var(--section-max-width);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero h1 {
+  max-width: 900px;
+  margin: 0 auto 0 0;
+  color: #fff;
+}
+
+.hero p {
+  color: #fff;
+  max-width: 640px;
+}
+
 @media (width >= 900px) {
   .hero {
-    padding: 40px 32px;
+    padding: 88px 32px;
+    min-height: 460px;
   }
 }
+
+/* title-only hero (no banner image) */
+.hero.hero-plain {
+  background: linear-gradient(100deg, var(--brand-purple) 0%, var(--brand-purple) 45%, #5a3fa0 100%);
+  min-height: 260px;
+}
+
+.hero.hero-plain::before { display: none; }
+
+.hero h1 { font-size: clamp(32px, 5vw, 56px); }

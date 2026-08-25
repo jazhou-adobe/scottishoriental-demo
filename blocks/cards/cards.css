@@ -25,3 +25,113 @@
   aspect-ratio: 4 / 3;
   object-fit: cover;
 }
+
+/* stylelint-disable no-descending-specificity */
+
+/* ===== stats variant ===== */
+.cards.stats > ul {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.cards.stats > ul > li {
+  border: 0;
+  background-color: var(--panel-teal);
+  padding: 28px 24px;
+}
+
+.cards.stats > ul > li:first-child {
+  background-color: var(--brand-teal);
+  color: #fff;
+}
+
+.cards.stats .cards-card-body {
+  margin: 0;
+}
+
+.cards.stats li img {
+  width: 56px;
+  height: 56px;
+  aspect-ratio: auto;
+  object-fit: contain;
+}
+
+.cards.stats h3 {
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--brand-purple);
+  margin: 12px 0 6px;
+}
+
+.cards.stats > ul > li:first-child h3 { color: #fff; }
+.cards.stats > ul > li:first-child a { color: #fff; }
+.cards.stats p { margin: 4px 0; }
+
+/* ===== links variant (teal band) ===== */
+main .section.cards-container:has(.cards.links) {
+  background-color: var(--panel-teal);
+  margin: 0;
+  padding: 48px 0;
+}
+
+.cards.links > ul {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.cards.links > ul > li {
+  border: 0;
+  background: transparent;
+}
+
+.cards.links .cards-card-body { margin: 0; }
+
+.cards.links .icon {
+  width: 56px;
+  height: 56px;
+}
+
+.cards.links h3 {
+  color: var(--brand-purple);
+  margin: 12px 0 8px;
+}
+
+.cards.links a {
+  font-weight: 600;
+}
+
+/* ===== insights variant ===== */
+.cards.insights > ul {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.cards.insights > ul > li {
+  border: 1px solid #e2e2e2;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.cards.insights .cards-card-body { margin: 20px; }
+
+.cards.insights .cards-card-body > p:first-child a {
+  display: inline-block;
+  background-color: var(--brand-purple);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 20px;
+  text-decoration: none;
+}
+
+.cards.insights h3 {
+  font-size: 20px;
+  margin: 12px 0 8px;
+}
+
+.cards.insights h3 a {
+  color: var(--brand-purple);
+  text-decoration: none;
+}
+
+.cards.insights h3 a:hover {
+  text-decoration: underline;
+}

@@ -1,6 +1,38 @@
 footer {
-  background-color: var(--light-color);
-  font-size: var(--body-font-size-xs);
+  background-color: var(--brand-purple);
+  color: #fff;
+  font-size: var(--body-font-size-s);
+}
+
+footer a:any-link {
+  color: #fff;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+footer h3 {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+footer .columns > div {
+  gap: 32px;
+  align-items: start;
+}
+
+footer .columns ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+footer .columns li {
+  padding: 4px 0;
 }
 
 footer .footer > div {
@@ -11,6 +43,14 @@ footer .footer > div {
 
 footer .footer p {
   margin: 0;
+}
+
+footer .footer > div > p:last-child {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid rgb(255 255 255 / 25%);
+  font-size: var(--body-font-size-xs);
+  color: rgb(255 255 255 / 80%);
 }
 
 @media (width >= 900px) {

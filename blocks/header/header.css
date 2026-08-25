@@ -4,6 +4,7 @@ header .nav-wrapper {
   width: 100%;
   z-index: 2;
   position: fixed;
+  border-bottom: 1px solid #e6e6e6;
 }
 
 header nav {
@@ -142,10 +143,10 @@ header nav[aria-expanded='true'] .nav-hamburger-icon::after {
 /* brand */
 header .nav-brand {
   grid-area: brand;
-  flex-basis: 128px;
-  font-size: var(--heading-font-size-s);
+  flex-basis: auto;
+  font-size: 18px;
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.15;
 }
 
 header nav .nav-brand img {
@@ -269,4 +270,45 @@ header nav .nav-sections ul > li > ul > li {
 /* tools */
 header nav .nav-tools {
   grid-area: tools;
+}
+
+/* ===== Scottish Oriental brand overrides ===== */
+header .nav-brand a:any-link {
+  color: var(--brand-purple);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+header nav .nav-sections a:any-link {
+  color: var(--brand-purple);
+}
+
+@media (width >= 900px) {
+  header nav .nav-sections .default-content-wrapper > ul > li[aria-expanded='true'] > ul {
+    width: max-content;
+    min-width: 240px;
+    background-color: #fff;
+    box-shadow: 0 8px 24px rgb(5 35 50 / 12%);
+    border-top: 3px solid var(--brand-teal);
+    z-index: 5;
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li > ul::before {
+    border-bottom-color: #fff;
+  }
+}
+
+/* tools: subscribe button */
+header nav .nav-tools a:any-link {
+  display: inline-block;
+  background-color: var(--brand-purple);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+header nav .nav-tools a:hover {
+  background-color: var(--brand-purple-dark);
 }

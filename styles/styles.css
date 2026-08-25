@@ -13,31 +13,39 @@
 :root {
   /* colors */
   --background-color: white;
-  --light-color: #f8f8f8;
+  --light-color: #f5f5f5;
   --dark-color: #505050;
-  --text-color: #131313;
-  --link-color: #3b63fb;
-  --link-hover-color: #1d3ecf;
+  --text-color: #052332;
+  --link-color: #392874;
+  --link-hover-color: #2a1d57;
+
+  /* brand palette */
+  --brand-purple: #392874;
+  --brand-purple-dark: #2a1d57;
+  --brand-teal: #27bac9;
+  --panel-teal: #e4f8f9;
+  --panel-teal-solid: #27bac9;
 
   /* fonts */
-  --body-font-family: roboto, roboto-fallback, sans-serif;
-  --heading-font-family: roboto-condensed, roboto-condensed-fallback, sans-serif;
+  --body-font-family: 'Noto Sans', roboto, roboto-fallback, sans-serif;
+  --heading-font-family: 'Noto Sans', roboto, roboto-fallback, sans-serif;
 
   /* body sizes */
-  --body-font-size-m: 22px;
-  --body-font-size-s: 19px;
-  --body-font-size-xs: 17px;
+  --body-font-size-m: 18px;
+  --body-font-size-s: 16px;
+  --body-font-size-xs: 14px;
 
   /* heading sizes */
-  --heading-font-size-xxl: 55px;
-  --heading-font-size-xl: 44px;
-  --heading-font-size-l: 34px;
-  --heading-font-size-m: 27px;
-  --heading-font-size-s: 24px;
-  --heading-font-size-xs: 22px;
+  --heading-font-size-xxl: 40px;
+  --heading-font-size-xl: 30px;
+  --heading-font-size-l: 24px;
+  --heading-font-size-m: 20px;
+  --heading-font-size-s: 18px;
+  --heading-font-size-xs: 16px;
 
   /* nav height */
-  --nav-height: 64px;
+  --nav-height: 110px;
+  --section-max-width: 1200px;
 }
 
 /* fallback fonts */
@@ -55,18 +63,13 @@
 
 @media (width >= 900px) {
   :root {
-    /* body sizes */
-    --body-font-size-m: 18px;
-    --body-font-size-s: 16px;
-    --body-font-size-xs: 14px;
-
     /* heading sizes */
-    --heading-font-size-xxl: 45px;
-    --heading-font-size-xl: 36px;
-    --heading-font-size-l: 28px;
-    --heading-font-size-m: 22px;
-    --heading-font-size-s: 20px;
-    --heading-font-size-xs: 18px;
+    --heading-font-size-xxl: 56px;
+    --heading-font-size-xl: 30px;
+    --heading-font-size-l: 24px;
+    --heading-font-size-m: 20px;
+    --heading-font-size-s: 18px;
+    --heading-font-size-xs: 16px;
   }
 }
 
@@ -112,10 +115,30 @@ h6 {
   scroll-margin: 40px;
 }
 
-h1 { font-size: var(--heading-font-size-xxl); }
-h2 { font-size: var(--heading-font-size-xl); }
-h3 { font-size: var(--heading-font-size-l); }
-h4 { font-size: var(--heading-font-size-m); }
+h1 {
+  font-size: var(--heading-font-size-xxl);
+  font-weight: 700;
+  line-height: 1.14;
+  color: var(--brand-purple);
+}
+
+h2 {
+  font-size: var(--heading-font-size-xl);
+  font-weight: 500;
+  color: var(--brand-purple);
+}
+
+h3 {
+  font-size: var(--heading-font-size-l);
+  font-weight: 600;
+}
+
+h4 {
+  font-size: var(--heading-font-size-m);
+  font-weight: 400;
+  color: var(--brand-purple);
+}
+
 h5 { font-size: var(--heading-font-size-s); }
 h6 { font-size: var(--heading-font-size-xs); }
 
@@ -179,7 +202,7 @@ button.button {
   max-width: 100%;
   margin: 0;
   border: 2px solid transparent;
-  border-radius: 2.4em;
+  border-radius: 4px;
   padding: 0.5em 1.2em;
   font: inherit;
   font-weight: 500;
@@ -191,26 +214,31 @@ button.button {
   white-space: nowrap;
 }
 
-a.button[aria-disabled="true"],
-button.button:disabled {
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
+a.button:any-link,
+button.button,
 a.button.primary,
 button.button.primary {
-  border-color: var(--text-color);
-  background-color: var(--text-color);
-  color: var(--background-color);
+  border-color: var(--brand-purple);
+  background-color: var(--brand-purple);
+  color: #fff;
 }
 
+a.button:any-link:hover,
+a.button:any-link:focus-visible,
+button.button:hover,
 a.button.primary:hover,
 a.button.primary:focus-visible,
 button.button.primary:hover,
 button.button.primary:focus-visible {
-  border-color: var(--dark-color);
-  background-color: var(--dark-color);
-  color: var(--light-color);
+  border-color: var(--brand-purple-dark);
+  background-color: var(--brand-purple-dark);
+  color: #fff;
+}
+
+a.button[aria-disabled="true"],
+button.button:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 a.button.primary[aria-disabled="true"],
@@ -322,4 +350,14 @@ main .section.highlight {
   background-color: var(--light-color);
   margin: 0;
   padding: 40px 0;
+}
+
+/* readable article body width */
+main > .section.article > div,
+main .default-content-wrapper {
+  max-width: var(--section-max-width);
+}
+
+main .default-content-wrapper h2 {
+  margin-top: 1.2em;
 }
