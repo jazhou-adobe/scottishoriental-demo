@@ -2,6 +2,7 @@
 coverage/*
 logs/*
 node_modules/*
+.omp/config.yml
 
 helix-importer-ui
 .DS_Store
