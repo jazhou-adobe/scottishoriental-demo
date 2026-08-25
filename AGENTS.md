@@ -20,3 +20,8 @@ Edge Delivery Services. Read a block first. Omissions are in the repo or known.
 - A PR without a `{branch}--{repo}--{owner}.aem.page/{path}` link is rejected.
 - All committed files are served. Use `.hlxignore`.
 - Skills: `/plugin marketplace add adobe/skills`, then `aem-edge-delivery-services` (24 skills, incl. `docs-search`).
+
+## Skills
+- Project skills live in `.skills/` (49 skills: `site-migration`, `impeccable`, `adobe/aem/edge-delivery-services/*`, `stardust/*`, `ema/*`). They are NOT auto-registered by any runtime.
+- To load them, run `.agents/discover-skills` from the repo root at session start (or before skill-relevant work). It prints each skill's name, `SKILL.md` path, and description into context.
+- Read the chosen skill's `SKILL.md` at the printed path before acting.

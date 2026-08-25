@@ -22,7 +22,7 @@ description: >
   hard-won migration gotchas (see the Gotchas section below).
 license: Apache-2.0
 metadata:
-  version: "2.3.0"
+  version: "2.4.0"
 ---
 
 # site-migration — full-page and full-site migration with design fidelity + IA
@@ -62,6 +62,7 @@ port), hand off to `stardust:prepare-migration` + `stardust:rollout` instead.
 | Header (+ mega-menu) | `migrate-header` | `.skills/ema/migrate-header/` |
 | Design craft (optional) | `impeccable` | `.skills/impeccable/` |
 | Fidelity diff gate | `diff` (`stardust:diff`) | `.skills/stardust/diff/` |
+| Per-block fidelity audit | `page-fidelity-pass` | `.skills/page-fidelity-pass/` |
 | DA auth / upload rules | `da-auth`, `da-content` | `.skills/adobe/aem/edge-delivery-services/da-auth/`, `.../da-content/` |
 | Batch execution model (reference only — mechanics, not the state machine) | `rollout` Phase A/C | `.skills/stardust/rollout/SKILL.md` |
 
@@ -81,6 +82,24 @@ port), hand off to `stardust:prepare-migration` + `stardust:rollout` instead.
   fidelity probe, Phase 4/5), and `image-audit.mjs` (decode-based broken-image +
   console-error gate for the deployed page, Phase 6.5) — copy whichever you need
   into the playwright scripts dir per the rule above.
+
+## Migration log — REQUIRED after every phase
+
+`migration/MIGRATION-LOG.md` is the human-readable timeline of the migration and
+is MANDATORY: **every phase below (0 → 9), and every Part B per-page subagent,
+MUST append a row to it as that step's final action — a phase is not "done" until
+it is logged.** This is separate from `migration/site-map.json` (the machine
+ledger of per-page `status`); the log records WHAT was done, WHEN, by WHICH skill,
+and the RESULT.
+
+- Create it on first use with a title + a Markdown timeline table whose header is:
+  `| Time | Phase | Skill | Action | Result |`.
+- Append exactly one row when a phase completes (or one row per page in Part B),
+  e.g. `| 14:20 | 4 Fidelity | page-fidelity-pass | Home audit → 6 blocker/9 major tasks, all fixed | pass |`.
+- The log is **append-only history**: on a gate FAIL (Phase 5/6.5) log the fail
+  row (with the reason), then add a later row when it passes — never overwrite.
+- Close the file with a short **Result** summary once the scope is fully deployed
+  (pages migrated, IA preserved, verification evidence, live URL).
 
 ---
 
@@ -283,38 +302,26 @@ finding before fixing anything.** Fixing block-by-block as you go hides
 duplicate root causes (one wrong token can explain five blocks) and makes it
 easy to skip a whole category unreviewed.
 
-**4a. Survey (check).** Walk every block against the source and record
-findings under fixed categories, not a flat list:
-- **Layout/composition** — hero treatment, link-group column layout vs grid,
-  panel/eyebrow treatment, image crop/bleed.
-- **Block width** — each block's rendered width (px and % of viewport)
-  against the source; a block clamped to a narrower/wider effective
-  `max-width` reads as a structural miss even when every token and font matches.
-- **Text-overlay position** — for a block with text laid over media (hero,
-  promo tiles), the text's anchor zone (top/middle/bottom × left/center/right)
-  relative to the media, not just whether overlay text exists.
-- **Link/button UX** — does each link render as a BUTTON (background/border,
-  or this project's `<strong>`/`<em>` wrap convention — Gotcha #2) or a plain
-  link, same as the source; does it carry the source's icon; does it have ANY
-  hover/focus feedback at all (a link that lost its hover/focus state is a
-  real regression even with the right text and color).
-- **Icons** — count of icon-bearing elements per block; a block that dropped
-  its icon set reads noticeably flatter even with correct text/color.
-  Run `scripts/block-diff.mjs` (Phase 5) for the four bullets above instead
-  of eyeballing — use it during the survey, not only at the gate.
-- **Typography, per block** — for each block's headings, body copy, links,
-  and any rule/divider, compare against the source's computed styles:
-  - **Type** — font-family (the actual rendered face, not just the declared name).
-  - **Weight** — font-weight.
-  - **Line height** — line-height ÷ font-size ratio (a unitless ratio survives
-    a font-size change; a raw px comparison doesn't).
-  - **Line space** — letter-spacing.
-  - **Line weight** — stroke width of any rule the block renders as (divider
-    `border`, underline `text-decoration-thickness`, `<hr>`).
-  Run `scripts/typography-diff.mjs` (Phase 5) to get this per block instead
-  of eyeballing it — use it during the survey, not only at the gate.
-- **Color/imagery** — link/brand colors, image treatment (full-bleed vs
-  contained).
+**4a. Audit → `page-fidelity-pass` (replaces the manual per-block survey).**
+Do NOT hand-walk every block. Run the `page-fidelity-pass` skill
+(`.skills/page-fidelity-pass/`) with SOURCE = the live source URL and BUILD =
+this page's local draft (`http://localhost:3000/drafts/<page>`; re-run later with
+BUILD = the deployed preview URL in Phase 6.5). It is the automated form of the
+old block-by-block survey: it captures matched, label/position-paired per-block
+screenshot crops from both sides at BOTH widths, fans one read-only subagent out
+per block (plus a header+footer chrome agent and an unpaired-block reconciliation
+agent), and aggregates a deduped, severity-ranked task list at
+`fidelity/<page>/tasks.md` (evidence in `fidelity/<page>/findings.md`) across five
+facets per block — **WIDTH, ASSET, LOCATION, FONT, COLOUR** — plus link/button UX,
+icons, and dropped/added/reworded/renamed blocks.
+- It internally runs the same `visual-diff` / `content-diff` / `typography-diff` /
+  `block-diff` probes + `image-audit` as Phase 5 and captures the nav/footer chrome
+  crops, so the survey no longer needs a hand-cropped per-section compare.
+- Classic-AEM source with no `<main>`: pass its content root (`--source-main <sel>`);
+  dismiss any consent/country gate (`--dismiss <sel>`) or the crops capture the gate,
+  not the page. Always run BOTH widths (1920 + 2560).
+- `page-fidelity-pass` FINDS; it does not fix. Its blocker + major tasks are the
+  input to 4b.
 
 **4b. Fix, grouped.** Apply fixes in the survey's category order — all
 typography fixes together, then all layout fixes, etc. — not block-by-block
@@ -377,15 +384,15 @@ node block-diff.mjs       "<source-url>" "http://localhost:3000/drafts/<page>" -
   params in hrefs, plus intentional omissions (hidden legal footnotes). VERIFY each red's text is
   actually absent (`curl <build> | grep`) before "fixing". A rewritten internal link (Link rewrite
   rule) changing the href value is expected and NOT a defect — only text/role changes matter.
-- **Caveat — the probes are blind to design (colour, layout, presence of design
-  images, button-vs-link) and to global chrome.** They compare TEXT/roles and a
-  few metrics inside `<main>`; nav/footer are outside it. So layout-slot AND
-  design fidelity need a **cropped 1:1 per-section screenshot compare against a
-  FULL-PAGE source capture** (`import-work/source-full.png` — the whole page incl.
-  footer, captured with `fullPage:true`, NOT a top-only shot), at both widths.
-  Include a **nav crop and a footer crop** in that compare — the biggest design
-  misses (footer colour, missing logos, nav layout, a dropped seal/badge, plain
-  links that should be buttons) only surface here, never in the probes.
+- **Design + chrome coverage comes from `page-fidelity-pass` (Phase 4a), not a
+  hand-cropped compare.** The four probes are blind to design (colour, layout,
+  presence of design images, button-vs-link) and to global chrome — they compare
+  TEXT/roles and a few metrics inside `<main>`; nav/footer are outside it. The
+  `page-fidelity-pass` run in Phase 4a already covers this: matched per-block crops
+  judged per facet, plus dedicated header + footer chrome crops, against a FULL-PAGE
+  source capture at both widths. Do NOT re-crop by hand — if design/chrome misses
+  are suspected, re-run `page-fidelity-pass` (it is the per-block/chrome gate) and
+  clear its blocker/major tasks.
 - On pass at both widths, set the page's `migration/site-map.json` `status` to `imported` (not yet `preview-ready` — that's earned after the post-deploy check in Phase 6.5).
 
 ### Phase 6 — Deploy (TWO parts — both required)
@@ -436,6 +443,11 @@ node typography-diff.mjs  "<source-url>" "$BUILD" --width 2560
 node block-diff.mjs       "<source-url>" "$BUILD" --width 1920
 node block-diff.mjs       "<source-url>" "$BUILD" --width 2560
 ```
+- **Per-block design re-audit (deployed).** Re-run `page-fidelity-pass` with
+  BUILD = the deployed preview URL (`$BUILD` above) — the DA pipeline reshapes
+  content/images between draft and deploy, so the per-block/chrome audit must be
+  repeated against the deployed page, not just the local draft. Clear its
+  blocker/major tasks before earning `preview-ready`.
 - **Broken-image gate (mandatory, deployed page).** Also run the decode check —
   `visual-diff.mjs` `failedToLoad` flags, or `node scripts/image-audit.mjs "$BUILD"`
   standalone — which asserts every `<img>` has `naturalWidth > 0` IN-BROWSER. A
