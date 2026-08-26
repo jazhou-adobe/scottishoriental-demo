@@ -272,3 +272,17 @@ main .section.cards-container:has(.cards.insights) {
   margin-top: auto;
   padding-top: 16px;
 }
+
+.cards.cta .cards-card-body p:last-child a {
+  display: inline-block;
+  background-color: var(--brand-purple);
+  color: #fff;
+  font-weight: 500;
+  padding: 10px 22px;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.cards.cta .cards-card-body p:last-child a:hover {
+  background-color: var(--brand-purple-dark);
+}
