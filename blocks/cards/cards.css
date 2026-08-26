@@ -335,3 +335,23 @@ main .section.cards-container:has(.cards.insights) {
   color: var(--brand-purple);
   font-weight: 500;
 }
+
+/* ===== contact variant (teal info panels: heading + contact details) ===== */
+.cards.contact > ul {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.cards.contact > ul > li {
+  border: 0;
+  background-color: var(--panel-teal);
+  padding: 28px 26px;
+}
+
+.cards.contact .cards-card-body {
+  margin: 0;
+}
+
+.cards.contact .cards-card-body h3 {
+  margin-top: 0;
+  color: var(--brand-purple);
+}
