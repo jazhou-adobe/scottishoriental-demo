@@ -286,3 +286,52 @@ main .section.cards-container:has(.cards.insights) {
 .cards.cta .cards-card-body p:last-child a:hover {
   background-color: var(--brand-purple-dark);
 }
+
+/* cta cards authored with an icon-font span (e.g. price-and-documents) instead
+   of a picture — size the leading icon paragraph like the picture icon */
+.cards.cta .cards-card-body .icon {
+  display: inline-block;
+  width: 48px;
+  height: 48px;
+}
+
+.cards.cta .cards-card-body > p:first-child {
+  margin-top: 0;
+}
+
+/* ===== logos variant (white provider-logo cards: logo + name link) ===== */
+.cards.logos > ul {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.cards.logos > ul > li {
+  border: 1px solid #e6e6e6;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.cards.logos .cards-card-image {
+  margin: 0 0 16px;
+}
+
+.cards.logos .cards-card-image img {
+  width: auto;
+  max-width: 150px;
+  height: 52px;
+  aspect-ratio: auto;
+  object-fit: contain;
+}
+
+.cards.logos .cards-card-body {
+  margin: 0;
+}
+
+.cards.logos .cards-card-body a {
+  color: var(--brand-purple);
+  font-weight: 500;
+}
