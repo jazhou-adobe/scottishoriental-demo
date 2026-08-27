@@ -12,6 +12,22 @@ main .section.panel-container:has(.panel.register) {
   color: var(--text-color);
 }
 
+/* interim/annual "Important Information" — subtle grey full-bleed legal band
+   (source ground #fafafa) with left-aligned dense legal copy, purple heading */
+main .section.panel-container:has(.panel.legal) {
+  background-color: #fafafa;
+}
+
+.panel.legal h3 {
+  margin-top: 0;
+  color: var(--brand-purple);
+}
+
+.panel.legal p {
+  font-size: var(--body-font-size-xs);
+  color: var(--dark-color);
+}
+
 /* T22: risk-factors body wraps earlier than source; nudge the body size
    down a step so the line-length matches (source line 1 ends
    "significantly less than") */
