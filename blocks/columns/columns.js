@@ -29,30 +29,49 @@ function decorateIntroVideo(block) {
   col.replaceChildren(facade);
 }
 
+function wrapRiskbox(startEl) {
+  const box = document.createElement('div');
+  box.className = 'report-riskbox';
+  const items = [];
+  for (let n = startEl; n; n = n.nextElementSibling) items.push(n);
+  startEl.before(box);
+  items.forEach((el) => box.append(el));
+  return box;
+}
+
 function decorateReport(block) {
   const row = block.firstElementChild;
   if (!row) return;
   const [main, aside] = row.children;
   if (main) {
     main.classList.add('report-main');
-    const heading = main.querySelector('h2, h3, h4');
-    if (heading) {
-      const box = document.createElement('div');
-      box.className = 'report-riskbox';
-      const items = [];
-      for (let n = heading; n; n = n.nextElementSibling) items.push(n);
-      heading.before(box);
-      items.forEach((el) => box.append(el));
-    }
+    // Only wrap an explicit "Risk factors" heading (+ its body) into the teal
+    // box — a long article's own headings must stay in normal flow.
+    const heading = [...main.children]
+      .find((el) => /^H[2-4]$/.test(el.tagName) && /risk factors/i.test(el.textContent));
+    if (heading) wrapRiskbox(heading);
   }
   if (aside) {
     aside.classList.add('report-aside');
+    const kids = [...aside.children];
+    const imgIdx = kids.findIndex((c) => c.querySelector('picture'));
+    // Any leading elements before the card image form the teal risk box.
+    if (imgIdx > 0) wrapRiskbox(kids[0]);
+    // The card image + trailing text become a bordered card.
     const imgHost = [...aside.children].find((c) => c.querySelector('picture'));
-    if (imgHost) imgHost.classList.add('report-card-image');
-    const body = document.createElement('div');
-    body.className = 'report-card-body';
-    [...aside.children].forEach((c) => { if (c !== imgHost) body.append(c); });
-    aside.append(body);
+    if (imgHost) {
+      const card = document.createElement('div');
+      card.className = 'report-card';
+      imgHost.classList.add('report-card-image');
+      const body = document.createElement('div');
+      body.className = 'report-card-body';
+      const rest = [];
+      for (let n = imgHost.nextElementSibling; n; n = n.nextElementSibling) rest.push(n);
+      imgHost.before(card);
+      card.append(imgHost);
+      rest.forEach((el) => body.append(el));
+      if (rest.length) card.append(body);
+    }
   }
 }
 

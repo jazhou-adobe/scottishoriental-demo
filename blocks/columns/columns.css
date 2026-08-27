@@ -121,10 +121,16 @@ main .section.columns-container:has(.columns.intro) > div {
   margin-top: 24px;
 }
 
+/* in the right rail the risk box leads (no top gap) and sits above the card */
+.columns.report .report-aside .report-riskbox {
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+
 .columns.report .report-riskbox > :first-child { margin-top: 0; }
 .columns.report .report-riskbox > :last-child { margin-bottom: 0; }
 
-.columns.report .report-aside {
+.columns.report .report-card {
   border: 1px solid #dadada;
   background-color: var(--background-color);
 }
