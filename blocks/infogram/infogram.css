@@ -1,6 +1,7 @@
-/* Infogram interactive diagram sits on a full-bleed light-teal band
-   (source "sotint vw100" section) with the responsive embed centred. */
-main .section.infogram-container {
+/* Infogram interactive diagram. Default renders inline on the page ground.
+   The `band` variant sits on a full-bleed light-teal band (source
+   "sotint vw100" section, e.g. the About FSSA history timeline). */
+main .section:has(.infogram.band) {
   background-color: var(--panel-teal);
   margin: 0;
   padding: 40px 0;
@@ -8,7 +9,7 @@ main .section.infogram-container {
 
 .infogram {
   max-width: var(--section-max-width);
-  margin: 0 auto;
+  margin: 24px auto;
 }
 
 .infogram .infogram-embed {
