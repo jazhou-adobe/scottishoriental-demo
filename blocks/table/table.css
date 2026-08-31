@@ -1,0 +1,52 @@
+/* Financial data tables (price & performance, fund information, holdings).
+   The block itself is the horizontal-scroll container for wide tables. */
+.table {
+  overflow-x: auto;
+  margin: 16px 0 24px;
+}
+
+.table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--body-font-size-s);
+}
+
+.table th,
+.table td {
+  padding: 10px 14px;
+  text-align: right;
+  border-bottom: 1px solid #e6e6e6;
+  white-space: nowrap;
+}
+
+/* first column (row labels) left-aligned */
+.table th:first-child,
+.table td:first-child,
+.table td.table-rowhead {
+  text-align: left;
+}
+
+/* column header row */
+.table thead th {
+  background-color: var(--brand-purple);
+  color: #fff;
+  font-weight: 600;
+  border-bottom: 0;
+}
+
+/* full-width caption bar above the header */
+.table thead th.table-caption {
+  background-color: var(--brand-purple-dark, #2a1d57);
+  text-align: left;
+  font-size: var(--body-font-size-s);
+}
+
+/* key/value (plain) tables: bold row labels, no header band */
+.table.plain td.table-rowhead {
+  font-weight: 600;
+  color: var(--brand-purple);
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f7f7f9;
+}
