@@ -114,74 +114,54 @@ main .section.columns-container:has(.columns.intro) > div {
   transform: scale(1.08);
 }
 
-/* ===== insight "report" layout: article/copy left, right rail with a
-   risk-factors band and a How-to-invest card (source /insights/* layout) ===== */
-.columns.report .report-risk {
-  background-color: var(--panel-teal);
-  padding: 16px 20px;
-  margin-top: 24px;
-}
+/* ===== insight two-column layouts (source /insights/*). DA flattens nested
+   classed divs, so everything targets the surviving block > row > cell tree.
+   .report  = short intro left (copy + Download + Risk-factors band)
+   .article = long article left
+   both     = How-to-invest card in the right cell ===== */
 
-.columns.report > div > div > .report-risk:first-child {
-  margin-top: 0;
-}
-
-.columns.report .report-risk h2 {
-  margin: 0 0 8px;
-  color: var(--brand-purple);
-  font-size: 30px;
-}
-
-.columns.report .report-risk h3 {
-  margin: 0 0 8px;
-  color: var(--brand-purple);
-  font-size: 20px;
-}
-
-.columns.report .report-risk p:last-child {
-  margin-bottom: 0;
-}
-
-/* How-to-invest card */
-.columns.report .invest-card {
+/* right cell = How-to-invest card (both variants) */
+.columns.report > div > div:last-child,
+.columns.article > div > div:last-child {
   background: #fff;
   border: 1px solid #e6e6e6;
   box-shadow: 0 2px 14px rgb(5 35 50 / 8%);
   padding: 0 0 24px;
   overflow: hidden;
-  margin-top: 24px;
 }
 
-.columns.report > div > div > .invest-card:first-child {
-  margin-top: 0;
-}
-
-.columns.report .invest-card > p:first-child {
+.columns.report > div > div:last-child > p:first-child,
+.columns.article > div > div:last-child > p:first-child {
   margin: 0;
 }
 
-.columns.report .invest-card img {
+.columns.report > div > div:last-child img,
+.columns.article > div > div:last-child img {
   display: block;
   width: 100%;
   height: auto;
 }
 
-.columns.report .invest-card h3 {
+.columns.report > div > div:last-child h3,
+.columns.article > div > div:last-child h3 {
   margin: 20px 24px 8px;
   font-size: 22px;
 }
 
-.columns.report .invest-card h3 a {
+.columns.report > div > div:last-child h3 a,
+.columns.article > div > div:last-child h3 a {
   color: var(--brand-purple);
   text-decoration: none;
 }
 
-.columns.report .invest-card > p:not(:first-child) {
+.columns.report > div > div:last-child > p:not(:first-child),
+.columns.article > div > div:last-child > p:not(:first-child) {
   margin: 8px 24px;
 }
 
 /* Invest now CTA — plain purple link with circular arrow (source teaser-cta) */
-.columns.report .invest-card > p:last-child a {
+.columns.report > div > div:last-child > p:last-child a,
+.columns.article > div > div:last-child > p:last-child a {
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -190,7 +170,8 @@ main .section.columns-container:has(.columns.intro) > div {
   text-decoration: none;
 }
 
-.columns.report .invest-card > p:last-child a::before {
+.columns.report > div > div:last-child > p:last-child a::before,
+.columns.article > div > div:last-child > p:last-child a::before {
   content: '\2192';
   display: inline-flex;
   align-items: center;
@@ -203,21 +184,40 @@ main .section.columns-container:has(.columns.intro) > div {
   line-height: 1;
 }
 
-.columns.report .invest-card > p:last-child a:hover {
+.columns.report > div > div:last-child > p:last-child a:hover,
+.columns.article > div > div:last-child > p:last-child a:hover {
   text-decoration: underline;
 }
 
+/* .report left cell: Risk-factors teal band (heading + following paragraph) */
+.columns.report > div > div:first-child > h2 {
+  margin: 24px 0 0;
+  padding: 16px 20px 8px;
+  background: var(--panel-teal);
+  color: var(--brand-purple);
+  font-size: 30px;
+}
+
+.columns.report > div > div:first-child > h2 + p {
+  margin: 0;
+  padding: 0 20px 16px;
+  background: var(--panel-teal);
+}
+
 @media (width >= 900px) {
-  .columns.report > div {
+  .columns.report > div,
+  .columns.article > div {
     align-items: flex-start;
     gap: 40px;
   }
 
-  .columns.report > div > div:first-child {
+  .columns.report > div > div:first-child,
+  .columns.article > div > div:first-child {
     flex: 2;
   }
 
-  .columns.report > div > div:last-child {
+  .columns.report > div > div:last-child,
+  .columns.article > div > div:last-child {
     flex: 1;
   }
 }
