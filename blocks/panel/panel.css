@@ -127,3 +127,28 @@ main .section.panel-container:has(.panel.promo) {
   border-color: var(--panel-teal-solid);
   color: #fff;
 }
+
+/* pull-quote variant: teal band with a large purple quote glyph
+   (source "who-we-are" quoted text band) */
+.panel.quote blockquote {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  position: relative;
+  max-width: var(--section-max-width);
+}
+
+.panel.quote blockquote::before {
+  content: '\201C';
+  display: block;
+  color: var(--brand-purple);
+  font-size: 64px;
+  line-height: 0.9;
+  font-weight: 700;
+}
+
+.panel.quote blockquote p {
+  margin: 8px 0 0;
+  font-size: var(--body-font-size-m);
+  color: var(--text-color);
+}
