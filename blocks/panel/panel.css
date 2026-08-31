@@ -13,14 +13,16 @@ main .section.panel-container:has(.panel.register) {
 }
 
 /* interim/annual "Important Information" — subtle grey full-bleed legal band
-   (source ground #fafafa) with left-aligned dense legal copy, purple heading */
+   (source ground #fafafa) with left-aligned dense legal copy, black heading */
 main .section.panel-container:has(.panel.legal) {
   background-color: #fafafa;
 }
 
 .panel.legal h3 {
   margin-top: 0;
-  color: var(--brand-purple);
+  color: #000;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .panel.legal p {

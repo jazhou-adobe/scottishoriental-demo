@@ -104,3 +104,20 @@
 .hero.hero-plain::before { display: none; }
 
 .hero.hero-plain::after { display: none; }
+
+/* article/insight banner hero — short banner, tint only, no teal sweeps
+   (source /insights/* hero_v2 renders ~380px) */
+.hero.banner {
+  min-height: 340px;
+  padding: 48px 24px;
+}
+
+.hero.banner::after { display: none; }
+
+@media (width >= 900px) {
+  .hero.banner {
+    min-height: 380px;
+    padding: 64px 32px;
+  }
+}
+
