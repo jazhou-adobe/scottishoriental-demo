@@ -1,0 +1,21 @@
+/* Infogram interactive diagram sits on a full-bleed light-teal band
+   (source "sotint vw100" section) with the responsive embed centred. */
+main .section.infogram-container {
+  background-color: var(--panel-teal);
+  margin: 0;
+  padding: 40px 0;
+}
+
+.infogram {
+  max-width: var(--section-max-width);
+  margin: 0 auto;
+}
+
+.infogram .infogram-embed {
+  width: 100%;
+}
+
+.infogram .infogram-embed iframe {
+  width: 100% !important;
+  border: 0;
+}
