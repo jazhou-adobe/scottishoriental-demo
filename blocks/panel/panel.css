@@ -97,3 +97,33 @@ main .section.panel-container:has(.panel.legal) {
     flex: 1;
   }
 }
+
+/* purple full-bleed "How to invest" promo band (source bgcolor-siprimary
+   how-to-invest CTA on article pages) */
+main .section.panel-container:has(.panel.promo) {
+  background-color: var(--brand-purple);
+}
+
+.panel.promo h2,
+.panel.promo p {
+  color: #fff;
+}
+
+.panel.promo h2 {
+  margin-top: 0;
+}
+
+.panel.promo .button.primary,
+.panel.promo a.button {
+  margin-top: 8px;
+  border-color: #fff;
+  background: #fff;
+  color: var(--brand-purple);
+}
+
+.panel.promo .button.primary:hover,
+.panel.promo a.button:hover {
+  background: var(--panel-teal-solid);
+  border-color: var(--panel-teal-solid);
+  color: #fff;
+}

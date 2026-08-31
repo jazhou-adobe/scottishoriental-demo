@@ -114,12 +114,16 @@ main .section.columns-container:has(.columns.intro) > div {
   transform: scale(1.08);
 }
 
-/* ===== insight "report" intro: 8:4 split — left copy + risk band,
-   right How-to-invest card (source /insights/*-report-* layout) ===== */
+/* ===== insight "report" layout: article/copy left, right rail with a
+   risk-factors band and a How-to-invest card (source /insights/* layout) ===== */
 .columns.report .report-risk {
   background-color: var(--panel-teal);
   padding: 16px 20px;
   margin-top: 24px;
+}
+
+.columns.report > div > div > .report-risk:first-child {
+  margin-top: 0;
 }
 
 .columns.report .report-risk h2 {
@@ -128,45 +132,56 @@ main .section.columns-container:has(.columns.intro) > div {
   font-size: 30px;
 }
 
+.columns.report .report-risk h3 {
+  margin: 0 0 8px;
+  color: var(--brand-purple);
+  font-size: 20px;
+}
+
 .columns.report .report-risk p:last-child {
   margin-bottom: 0;
 }
 
-/* right column = How-to-invest card */
-.columns.report > div > div:last-child {
+/* How-to-invest card */
+.columns.report .invest-card {
   background: #fff;
   border: 1px solid #e6e6e6;
   box-shadow: 0 2px 14px rgb(5 35 50 / 8%);
   padding: 0 0 24px;
   overflow: hidden;
+  margin-top: 24px;
 }
 
-.columns.report > div > div:last-child > p:first-child {
+.columns.report > div > div > .invest-card:first-child {
+  margin-top: 0;
+}
+
+.columns.report .invest-card > p:first-child {
   margin: 0;
 }
 
-.columns.report > div > div:last-child img {
+.columns.report .invest-card img {
   display: block;
   width: 100%;
   height: auto;
 }
 
-.columns.report > div > div:last-child h3 {
+.columns.report .invest-card h3 {
   margin: 20px 24px 8px;
   font-size: 22px;
 }
 
-.columns.report > div > div:last-child h3 a {
+.columns.report .invest-card h3 a {
   color: var(--brand-purple);
   text-decoration: none;
 }
 
-.columns.report > div > div:last-child > p:not(:first-child) {
+.columns.report .invest-card > p:not(:first-child) {
   margin: 8px 24px;
 }
 
 /* Invest now CTA — plain purple link with circular arrow (source teaser-cta) */
-.columns.report > div > div:last-child > p:last-child a {
+.columns.report .invest-card > p:last-child a {
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -175,7 +190,7 @@ main .section.columns-container:has(.columns.intro) > div {
   text-decoration: none;
 }
 
-.columns.report > div > div:last-child > p:last-child a::before {
+.columns.report .invest-card > p:last-child a::before {
   content: '\2192';
   display: inline-flex;
   align-items: center;
@@ -188,7 +203,7 @@ main .section.columns-container:has(.columns.intro) > div {
   line-height: 1;
 }
 
-.columns.report > div > div:last-child > p:last-child a:hover {
+.columns.report .invest-card > p:last-child a:hover {
   text-decoration: underline;
 }
 
