@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scottish Oriental — Website Migration Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #f7fdfd;              /* faint brand-teal paper */
+      --primary: #392874;         /* brand purple */
+      --secondary: #27bac9;       /* brand teal */
+      --panel: #e4f8f9;           /* panel teal */
+      --text: #052332;            /* brand text */
+      --text-muted: #5a6270;
+      --text-light: #9aa0a8;
+      --accent-light: rgba(57, 40, 116, 0.06);
+      --accent-medium: rgba(57, 40, 116, 0.14);
+      --border: rgba(57, 40, 116, 0.18);
+      --card-bg: rgba(57, 40, 116, 0.04);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Noto Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* Slide container */
+    .deck {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      /* Asymmetric padding: extra bottom space to clear the fixed
+         slide-counter (left) and nav-controls (right). Without this,
+         cards/grids that fill slide-content overlap the nav chrome. */
+      padding: 3.5vw 4vw 8.5vh 4vw;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(40px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      overflow: hidden;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateX(0);
+      z-index: 10;
+    }
+
+    .slide.prev {
+      transform: translateX(-40px);
+    }
+
+    /* Typography */
+    h1, h2, h3, h4 {
+      font-family: 'Noto Sans', sans-serif;
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      font-size: clamp(2.8rem, 5vw, 4.2rem);
+      font-weight: 700;
+    }
+
+    h2 {
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      margin-bottom: 1.5rem;
+    }
+
+    h3 {
+      font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    h4 {
+      font-size: clamp(0.85rem, 1.2vw, 1rem);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+    }
+
+    p, li {
+      font-size: clamp(0.85rem, 1.1vw, 1.05rem);
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    /* Slide header bar */
+    .slide-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2.5vh;
+      flex-shrink: 0;
+    }
+
+    .slide-header h4 {
+      margin: 0;
+    }
+
+    .slide-header .tag {
+      font-family: 'Noto Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--primary);
+      background: var(--accent-light);
+      padding: 0.35rem 0.9rem;
+      border-radius: 100px;
+    }
+
+    /* Slide content area */
+    .slide-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    /* Navigation */
+    .nav-controls {
+      position: fixed;
+      bottom: 2.5vh;
+      right: 3vw;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      z-index: 100;
+    }
+
+    .nav-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      color: var(--primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      font-size: 1.1rem;
+    }
+
+    .nav-btn:hover {
+      background: var(--primary);
+      color: var(--bg);
+      border-color: var(--primary);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .slide-counter {
+      font-family: 'Noto Sans', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      position: fixed;
+      bottom: 2.5vh;
+      left: 3vw;
+      z-index: 100;
+    }
+
+    .progress-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: var(--primary);
+      transition: width 0.4s ease;
+      z-index: 100;
+    }
+
+    /* Decorative elements */
+    .accent-line {
+      width: 60px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+    }
+
+    .accent-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* ============================================================
+       LAYOUT 1: Cover / Title Slide
+       ============================================================ */
+    .layout-cover {
+      justify-content: center;
+      align-items: flex-start;
+      padding-left: 8vw;
+    }
+
+    .layout-cover h1 {
+      max-width: 55vw;
+      margin-bottom: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .layout-cover .subtitle {
+      font-size: clamp(1rem, 1.5vw, 1.25rem);
+      color: var(--text-muted);
+      max-width: 40vw;
+      margin-bottom: 3rem;
+      font-weight: 400;
+    }
+
+    .layout-cover .meta {
+      font-family: 'Noto Sans', sans-serif;
+      font-size: 0.8rem;
+      color: var(--text-light);
+      letter-spacing: 0.05em;
+    }
+
+    .layout-cover .cover-decoration {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 35vw;
+      height: 100vh;
+      background: var(--accent-light);
+      clip-path: polygon(30% 0, 100% 0, 100% 100%, 0% 100%);
+    }
+
+    .layout-cover .cover-dots {
+      position: absolute;
+      bottom: 12vh;
+      right: 8vw;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      opacity: 0.25;
+    }
+
+    .layout-cover .cover-dots .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+
+    /* ============================================================
+       LAYOUT 2: Agenda / Table of Contents
+       ============================================================ */
+    .layout-agenda .agenda-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 1rem 3rem;
+      margin-top: 1rem;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .agenda-item {
+      display: flex;
+      gap: 1.2rem;
+      align-items: center;
+      padding: 1rem 1.2rem;
+      border-radius: 12px;
+      transition: background 0.2s ease;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .agenda-item:hover {
+      background: var(--card-bg);
+    }
+
+    .agenda-num {
+      font-family: 'Noto Sans', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+      min-width: 36px;
+    }
+
+    .agenda-item h3 {
+      margin-bottom: 0.3rem;
+      font-size: clamp(1rem, 1.4vw, 1.2rem);
+    }
+
+    .agenda-item p {
+      font-size: clamp(0.8rem, 1vw, 0.95rem);
+      line-height: 1.5;
+    }
+
+    /* ============================================================
+       LAYOUT 3: Key Metrics (3 large callouts)
+       Cards size to their content; the row centers vertically
+       inside the remaining slide-content area.
+       ============================================================ */
+    .layout-metrics .slide-content {
+      justify-content: flex-start;
+    }
+
+    .layout-metrics .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 0.5rem;
+      align-items: stretch;
+    }
+
+    .metric-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      padding: 1.5rem 1.6rem;
+      border-radius: 14px;
+      border: 1.5px solid var(--border);
+      background: var(--card-bg);
+    }
+
+    .metric-card .metric-value {
+      font-family: 'Noto Sans', sans-serif;
+      font-size: clamp(2.2rem, 3.4vw, 3rem);
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .metric-card .metric-label {
+      font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .metric-card .metric-desc {
+      font-size: clamp(0.78rem, 0.95vw, 0.9rem);
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .metric-card .metric-supports {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      margin: 0.2rem 0 0;
+      padding: 0.7rem 0 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .metric-card .metric-supports li {
+      font-size: clamp(0.75rem, 0.9vw, 0.85rem);
+      color: var(--text-muted);
+      padding-left: 1rem;
+      position: relative;
+      line-height: 1.45;
+    }
+
+    .metric-card .metric-supports li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--text-light);
+    }
+
+    .metric-card .metric-change {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-family: 'Noto Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-top: 0.3rem;
+    }
+
+    .metric-change.positive { color: #059669; }
+    .metric-change.negative { color: #dc2626; }
+
+    /* ============================================================
+       LAYOUT 4: Data Dashboard (6 stat grid)
+       Cells have natural height with stat at top + name + small
+       context line. Grid is auto-sized; the row stays in the upper
+       portion of slide-content with the bottom-padding reserved
+       for nav chrome.
+       ============================================================ */
+    .layout-dashboard .slide-content {
+      justify-content: flex-start;
+    }
+
+    .layout-dashboard .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+      margin-top: 0.5rem;
+    }
+
+    .stat-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1.4rem 1.5rem;
+      border-radius: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+    }
+
+    .stat-cell .stat-top {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    .stat-cell .stat-num {
+      font-family: 'Noto Sans', sans-serif;
+      font-size: clamp(1.6rem, 2.4vw, 2.1rem);
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .stat-cell .stat-unit {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .stat-cell .stat-name {
+      font-size: clamp(0.85rem, 1vw, 0.95rem);
+      color: var(--text);
+      line-height: 1.35;
+      font-weight: 500;
+    }
+
+    .stat-cell .stat-context {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      line-height: 1.4;
+      padding-top: 0.4rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ============================================================
+       LAYOUT 5: Two Column Split
+       Left = numbered insight list, Right = pull-quote + supporting
+       stats. Both columns size to their content with natural rhythm
+       (gap-based spacing, no forced height-distribution).
+       ============================================================ */
+    .layout-split .slide-content {
+      justify-content: flex-start;
+    }
+
+    .layout-split .split-body {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 3.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .split-left, .split-right {
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+    }
+
+    .split-right {
+      padding-left: 2.5rem;
+      border-left: 2px solid var(--border);
+    }
+
+    .insight-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      margin: 0;
+      counter-reset: insight;
+    }
+
+    .insight-list li {
+      position: relative;
+      padding-left: 2.6rem;
+      font-size: clamp(0.88rem, 1.05vw, 1rem);
+      color: var(--text);
+      line-height: 1.55;
+      counter-increment: insight;
+    }
+
+    .insight-list li::before {
+      content: counter(insight, decimal-leading-zero);
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-family: 'Noto Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--primary);
+      letter-spacing: 0.05em;
+      line-height: 1.7;
+    }
+
+    .split-highlight {
+      font-family: 'Noto Sans', sans-serif;
+      font-size: clamp(1.15rem, 1.55vw, 1.5rem);
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.4;
+      padding: 1.3rem 1.5rem;
+      background: var(--accent-light);
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .split-highlight cite {
+      display: block;
+      margin-top: 0.7rem;
+      font-style: normal;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .mini-stat-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      padding-top: 0.4rem;
+    }
+
+    .mini-stat {
+      padding: 0.9rem 1rem;
+      border-radius: 10px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+    }
+
+    .mini-stat .mini-val {
+      font-family: 'Noto Sans', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .mini-stat .mini-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+      line-height: 1.35;
+    }
+
+    /* ============================================================
+       LAYOUT 6: Horizontal Bar Ranking
+       ============================================================ */
+    .layout-bars .bars-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.8rem;
+      margin-top: 0.5rem;
+    }
+
+    .bar-item {
+      display: grid;
+      grid-template-columns: minmax(180px, 30%) 1fr auto;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.6rem 0;
+    }
+
+    .bar-label {
+      font-size: clamp(0.8rem, 1.1vw, 1rem);
+      color: var(--text);
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    .bar-track {
+      height: 28px;
+      background: var(--accent-light);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 6px;
+      transition: width 0.8s ease;
+    }
+
+    .bar-pct {
+      font-family: 'Noto Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--primary);
+      min-width: 45px;
+      text-align: right;
+    }
+
+    .bar-note {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      margin-top: 0.2rem;
+    }
+
+    /* ============================================================
+       LAYOUT 7: Quote / Highlight
+       ============================================================ */
+    .layout-quote {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .layout-quote .quote-mark {
+      font-family: 'Noto Sans', sans-serif;
+      font-size: 8rem;
+      font-weight: 700;
+      color: var(--primary);
+      opacity: 0.15;
+      line-height: 0.5;
+      margin-bottom: 1rem;
+    }
+
+    .layout-quote blockquote {
+      font-family: 'Noto Sans', sans-serif;
+      font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+      font-weight: 500;
+      line-height: 1.35;
+      color: var(--text);
+      max-width: 65vw;
+      margin-bottom: 2rem;
+    }
+
+    .layout-quote .quote-source {
+      font-size: clamp(0.85rem, 1.1vw, 1rem);
+      color: var(--text-muted);
+    }
+
+    .layout-quote .quote-source strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .layout-quote .quote-decoration {
+      position: absolute;
+      top: 10vh;
+      left: 5vw;
+      width: 80px;
+      height: 80px;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+    }
+
+    .layout-quote .quote-decoration-2 {
+      position: absolute;
+      bottom: 12vh;
+      right: 6vw;
+      width: 60px;
+      height: 60px;
+      background: var(--accent-light);
+      border-radius: 50%;
+    }
+
+    /* ============================================================
+       LAYOUT 8: Timeline / Process Flow
+       ============================================================ */
+    .layout-timeline .timeline-track {
+      display: flex;
+      gap: 1.5rem;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+
+    .timeline-step {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .timeline-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 28px;
+      right: -0.75rem;
+      width: 1.5rem;
+      height: 2px;
+      background: var(--border);
+    }
+
+    .step-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Noto Sans', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .timeline-step:nth-child(2) .step-circle { opacity: 0.85; }
+    .timeline-step:nth-child(3) .step-circle { opacity: 0.7; }
+    .timeline-step:nth-child(4) .step-circle { opacity: 0.55; }
+
+    .step-title {
+      font-family: 'Noto Sans', sans-serif;
+      font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+
+    .step-desc {
+      font-size: clamp(0.75rem, 1vw, 0.9rem);
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 220px;
+    }
+
+    /* ============================================================
+       LAYOUT 9: Detailed Analysis (bullets with sub-items)
+       ============================================================ */
+    .layout-detail .detail-body {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem 3rem;
+      flex: 1;
+      margin-top: 0.5rem;
+      overflow: hidden;
+    }
+
+    .detail-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .detail-block {
+      padding: 1rem 1.2rem;
+      border-radius: 10px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+    }
+
+    .detail-block h3 {
+      font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+      margin-bottom: 0.6rem;
+      color: var(--text);
+    }
+
+    .detail-block ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .detail-block ul li {
+      position: relative;
+      padding-left: 1.1rem;
+      padding-bottom: 0.4rem;
+      font-size: clamp(0.78rem, 1vw, 0.9rem);
+      line-height: 1.5;
+    }
+
+    .detail-block ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.55rem;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    .detail-block ul li:last-child {
+      padding-bottom: 0;
+    }
+
+    /* ============================================================
+       LAYOUT 10: Closing / CTA
+       ============================================================ */
+    .layout-closing {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .layout-closing h1 {
+      margin-bottom: 1rem;
+    }
+
+    .layout-closing .closing-sub {
+      font-size: clamp(1rem, 1.5vw, 1.3rem);
+      color: var(--text-muted);
+      max-width: 45vw;
+      margin-bottom: 2.5rem;
+    }
+
+    .layout-closing .cta-btn {
+      display: inline-block;
+      font-family: 'Noto Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--bg);
+      background: var(--primary);
+      padding: 0.9rem 2.2rem;
+      border-radius: 100px;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .layout-closing .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(30, 43, 250, 0.25);
+    }
+
+    .layout-closing .closing-contact {
+      margin-top: 3rem;
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+
+    .layout-closing .closing-decoration {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 500px;
+      height: 500px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .layout-closing .closing-decoration-2 {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 360px;
+      height: 360px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    /* Keyboard hint */
+    .keyboard-hint {
+      position: fixed;
+      bottom: 2.5vh;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      color: var(--text-light);
+      z-index: 100;
+      opacity: 0.6;
+    }
+
+    /* Responsive adjustments for very small heights */
+    @media (max-height: 700px) {
+      .slide { padding: 2.5vh 3vw; }
+      .layout-agenda .agenda-grid { gap: 0.8rem 2rem; }
+      .agenda-item { padding: 0.8rem; }
+      .metric-card { padding: 1rem; }
+      .layout-bars .bars-container { gap: 0.5rem; }
+      .bar-item { padding: 0.4rem 0; }
+      .detail-block { padding: 0.8rem 1rem; }
+    }
+  
+    /* Brand duality overrides — teal accents on a purple-led system */
+    .slide-header .tag { background: var(--panel); color: var(--primary); }
+    .metric-change.positive { color: #1a8b97; }
+    .step-circle { box-shadow: 0 0 0 4px var(--panel); }
+    /* ============================================================
+       CUSTOM LAYOUT: Workflow phase flow (designed in-system)
+       ============================================================ */
+    .flow-groups { display: flex; flex-direction: column; gap: 2vh; margin-top: 0.5vh; }
+    .flow-group-head { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 1.1vh; }
+    .flow-group-head .lbl { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #1a8b97; white-space: nowrap; }
+    .flow-group-head .rule { flex: 1; height: 1px; background: var(--border); }
+    .flow-row { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .flow-chip { flex: 1 1 0; min-width: 148px; display: flex; flex-direction: column; gap: 0.5rem; padding: 0.95rem 1rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; }
+    .flow-row.single .flow-chip { flex: 0 0 auto; min-width: 300px; flex-direction: row; align-items: center; gap: 0.9rem; }
+    .flow-chip .num { flex-shrink: 0; min-width: 30px; height: 30px; padding: 0 0.4rem; border-radius: 999px; background: var(--primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 0.74rem; font-weight: 700; }
+    .flow-chip .t { font-size: 0.9rem; font-weight: 600; color: var(--text); line-height: 1.2; }
+    .flow-chip .d { font-size: 0.72rem; color: var(--text-muted); line-height: 1.35; }
+    .flow-row.single .flow-chip .body { display: flex; flex-direction: column; gap: 0.2rem; }
+
+    /* ============================================================
+       CUSTOM LAYOUT: Skills-per-phase table (designed in-system)
+       ============================================================ */
+    .skills-table { width: 100%; border-collapse: collapse; margin-top: 0.5vh; }
+    .skills-table th { text-align: left; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--primary); padding: 0 0.9rem 0.7rem; border-bottom: 2px solid var(--border); }
+    .skills-table td { font-size: 0.8rem; color: var(--text); padding: 0.5rem 0.9rem; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.3; }
+    .skills-table td.phase { font-weight: 600; white-space: nowrap; }
+    .skills-table td.phase .pn { color: var(--primary); font-weight: 700; margin-right: 0.35rem; }
+    .skills-table td.role { color: var(--text-muted); }
+    .skills-table tbody tr:hover td { background: var(--card-bg); }
+    .sk { display: inline-block; background: var(--panel); color: var(--primary); font-size: 0.7rem; font-weight: 600; padding: 0.13rem 0.5rem; border-radius: 6px; margin: 0 0.25rem 0.2rem 0; }
+  </style>
+</head>
+<body>
+
+  <div class="deck">
+
+    <!-- SLIDE 1: Cover -->
+    <div class="slide layout-cover active">
+      <div class="cover-decoration"></div>
+      <div class="cover-dots">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+      <div class="accent-line"></div>
+      <h1>Website Migration<br>Report</h1>
+      <p class="subtitle">scottishoriental.com re-platformed to Adobe AEM Edge Delivery &mdash; 53 pages migrated, verified block-by-block, and published live.</p>
+      <p class="meta">August 2026 &nbsp;&middot;&nbsp; Client Readout &nbsp;&middot;&nbsp; site-migration</p>
+    </div>
+
+    <!-- SLIDE 2: Scope & Approach (metrics) -->
+    <div class="slide layout-metrics">
+      <div class="slide-header">
+        <h4>Scope &amp; Approach</h4>
+        <span class="tag">Overview</span>
+      </div>
+      <div class="slide-content">
+        <h2>A whole-site migration onto Adobe AEM Edge Delivery</h2>
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-value">53</div>
+            <div class="metric-label">Pages migrated</div>
+            <div class="metric-desc">The entire scottishoriental.com sitemap &mdash; taken from the live site into Document Authoring.</div>
+            <ul class="metric-supports">
+              <li>1 home &middot; 4 section indexes &middot; 48 leaf pages</li>
+              <li>Sitemap-driven scope in scope.json</li>
+              <li>IA ledger recorded in site-map.json</li>
+            </ul>
+            <div class="metric-change positive"><span>&uarr;</span> 100% of sitemap</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">1:1</div>
+            <div class="metric-label">Information architecture preserved</div>
+            <div class="metric-desc">Every nested path retained; internal links repointed to the migrated targets.</div>
+            <ul class="metric-supports">
+              <li>0 flattening across the tree</li>
+              <li>Every parent is a real section index</li>
+              <li>0 in-scope link leaks to the old site</li>
+            </ul>
+            <div class="metric-change positive"><span>&uarr;</span> IA reconciled</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">8</div>
+            <div class="metric-label">Phased quality gates</div>
+            <div class="metric-desc">Orchestrated end-to-end by the site-migration skill, one gate per phase.</div>
+            <ul class="metric-supports">
+              <li>Scope &rarr; Tokens &rarr; Header/Footer &rarr; Import</li>
+              <li>Verify &rarr; Deploy &rarr; Publish &rarr; Reconcile</li>
+              <li>Diff gate at 1920 + 2560, then preview + live</li>
+            </ul>
+            <div class="metric-change positive"><span>&uarr;</span> Gated throughout</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: The site-migration workflow (phase flow) -->
+    <div class="slide layout-flow">
+      <div class="slide-header">
+        <h4>The Workflow</h4>
+        <span class="tag">site-migration</span>
+      </div>
+      <div class="slide-content">
+        <h2>Ten gated phases, in two parts</h2>
+        <div class="flow-groups">
+          <div class="flow-group">
+            <div class="flow-group-head"><span class="lbl">Foundation</span><span class="rule"></span></div>
+            <div class="flow-row single">
+              <div class="flow-chip"><span class="num">0</span><div class="body"><div class="t">Scope &amp; IA</div><div class="d">Confirm scope with the client; build the IA ledger + link-rewrite rule.</div></div></div>
+            </div>
+          </div>
+          <div class="flow-group">
+            <div class="flow-group-head"><span class="lbl">Part A &middot; Bootstrap starting pages</span><span class="rule"></span></div>
+            <div class="flow-row">
+              <div class="flow-chip"><span class="num">1</span><div class="t">Import</div><div class="d">Scrape &rarr; canonical block HTML.</div></div>
+              <div class="flow-chip"><span class="num">2</span><div class="t">Header &amp; footer</div><div class="d">Global nav + footer fragments.</div></div>
+              <div class="flow-chip"><span class="num">3</span><div class="t">Design tokens</div><div class="d">Real computed brand tokens &rarr; :root.</div></div>
+              <div class="flow-chip"><span class="num">4</span><div class="t">Fidelity pass</div><div class="d">Per-block match to the source.</div></div>
+              <div class="flow-chip"><span class="num">5</span><div class="t">Validate</div><div class="d">Four diff probes &times; two widths.</div></div>
+              <div class="flow-chip"><span class="num">6</span><div class="t">Deploy</div><div class="d">Code &rarr; git, content &rarr; DA.</div></div>
+              <div class="flow-chip"><span class="num">6.5</span><div class="t">Preview gate</div><div class="d">Re-verify the deployed URL.</div></div>
+            </div>
+          </div>
+          <div class="flow-group">
+            <div class="flow-group-head"><span class="lbl">Part B &middot; Batch (multi-page scope)</span><span class="rule"></span></div>
+            <div class="flow-row">
+              <div class="flow-chip"><span class="num">7</span><div class="t">Fan-out</div><div class="d">Wave-based subagent migration of remaining pages.</div></div>
+              <div class="flow-chip"><span class="num">8</span><div class="t">Reconcile</div><div class="d">IA + link-rewrite audit across the tree.</div></div>
+              <div class="flow-chip"><span class="num">9</span><div class="t">Publish</div><div class="d">Go live, then final verification.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: Skills behind each phase (table) -->
+    <div class="slide layout-skills">
+      <div class="slide-header">
+        <h4>Skills Behind Each Phase</h4>
+        <span class="tag">Orchestration</span>
+      </div>
+      <div class="slide-content">
+        <h2>site-migration sequences focused sub-skills</h2>
+        <table class="skills-table">
+          <thead>
+            <tr><th style="width:20%">Phase</th><th style="width:34%">Skill(s)</th><th style="width:46%">Role</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="phase"><span class="pn">0</span>Scope &amp; IA</td><td><span class="sk">site-migration</span></td><td class="role">Defines scope, builds the IA ledger and the link-rewrite rule.</td></tr>
+            <tr><td class="phase"><span class="pn">1</span>Import</td><td><span class="sk">page-import</span><span class="sk">scrape-webpage</span></td><td class="role">Scrapes the source and generates canonical EDS block HTML.</td></tr>
+            <tr><td class="phase"><span class="pn">2</span>Header &amp; footer</td><td><span class="sk">migrate-header</span></td><td class="role">Rebuilds nav / mega-menu and the footer fragment.</td></tr>
+            <tr><td class="phase"><span class="pn">3</span>Design tokens</td><td><span class="sk">site-migration</span></td><td class="role">Extracts real computed brand tokens (Playwright) into :root.</td></tr>
+            <tr><td class="phase"><span class="pn">4</span>Fidelity pass</td><td><span class="sk">building-blocks</span><span class="sk">page-fidelity-pass</span><span class="sk">diagnose</span></td><td class="role">Per-block match to source; root-cause fixes over symptoms.</td></tr>
+            <tr><td class="phase"><span class="pn">5</span>Validate</td><td><span class="sk">stardust:diff</span></td><td class="role">Four probes (visual / content / typography / block) at both widths.</td></tr>
+            <tr><td class="phase"><span class="pn">6</span>Deploy</td><td><span class="sk">da-auth</span><span class="sk">da-content</span></td><td class="role">Code &rarr; git; content &rarr; DA with absolute-URL guardrails.</td></tr>
+            <tr><td class="phase"><span class="pn">6.5</span>Preview gate</td><td><span class="sk">page-fidelity-pass</span><span class="sk">image-audit</span></td><td class="role">Re-verifies the deployed preview URL, not just local drafts.</td></tr>
+            <tr><td class="phase"><span class="pn">7</span>Batch fan-out</td><td><span class="sk">stardust:rollout</span></td><td class="role">Wave / ledger subagent execution model for remaining pages.</td></tr>
+            <tr><td class="phase"><span class="pn">8</span>Reconcile</td><td><span class="sk">site-migration</span></td><td class="role">IA reconciliation + link-rewrite audit.</td></tr>
+            <tr><td class="phase"><span class="pn">9</span>Publish</td><td><span class="sk">da-content</span></td><td class="role">Publishes live and confirms every row is served.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: What Shipped (detail two-column) -->
+    <div class="slide layout-detail">
+      <div class="slide-header">
+        <h4>What Shipped</h4>
+        <span class="tag">Deliverables</span>
+      </div>
+      <div class="slide-content">
+        <h2>53 pages, a brand design system, and reusable blocks &mdash; live</h2>
+        <div class="detail-body">
+          <div class="detail-col">
+            <div class="detail-block">
+              <h3>Pages &amp; navigation</h3>
+              <ul>
+                <li>53 pages plus a global nav and footer, published to aem.live</li>
+                <li>Nested URL paths preserved exactly, 1:1 with the source</li>
+                <li>All internal links repointed at the migrated targets</li>
+              </ul>
+            </div>
+            <div class="detail-block">
+              <h3>Faithful content</h3>
+              <ul>
+                <li>Hero, prose, images and tables carried across per page</li>
+                <li>Insights index: 34 dated article cards, newest-first</li>
+                <li>Uppercase paths lowercased, with a redirects ledger</li>
+              </ul>
+            </div>
+          </div>
+          <div class="detail-col">
+            <div class="detail-block">
+              <h3>Brand design system</h3>
+              <ul>
+                <li>Tokens: purple #392874, teal #27bac9, panel #e4f8f9</li>
+                <li>Text #052332 on the Noto Sans typeface</li>
+                <li>Themed header + footer with PRI / FSSA marks</li>
+              </ul>
+            </div>
+            <div class="detail-block">
+              <h3>Edge Delivery blocks</h3>
+              <ul>
+                <li>hero, panel, columns and cards (stats / links / insights / cta / logos / contact)</li>
+                <li>HubSpot lead-capture form + custom icons</li>
+                <li>Brightcove click-to-play video facade</li>
+                <li>Data blocks added later: infogram, table, Highcharts chart, sticky anchor-nav</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: The Journey (timeline, 4 sessions) -->
+    <div class="slide layout-timeline">
+      <div class="slide-header">
+        <h4>The Journey</h4>
+        <span class="tag">Four Sessions</span>
+      </div>
+      <div class="slide-content">
+        <h2>From bulk import to a fidelity-verified, richly-blocked site</h2>
+        <div class="timeline-track">
+          <div class="timeline-step">
+            <div class="step-circle">1</div>
+            <div class="step-title">Initial migration</div>
+            <div class="step-desc">Scoped 53 pages, set brand tokens, built the header, footer and core blocks, imported and published the whole site, then ran a home fidelity pass.</div>
+          </div>
+          <div class="timeline-step">
+            <div class="step-circle">2</div>
+            <div class="step-title">Content remediation</div>
+            <div class="step-desc">Fixed a systemic converter defect that had truncated ~44 pages; recaptured full content, lowercased uppercase paths, and began design polish.</div>
+          </div>
+          <div class="timeline-step">
+            <div class="step-circle">3</div>
+            <div class="step-title">Systemic hero fix</div>
+            <div class="step-desc">Re-ran fidelity site-wide; diagnosed and fixed the cell-less hero picture DA was silently dropping, plus a leaked decorative banner band.</div>
+          </div>
+          <div class="timeline-step">
+            <div class="step-circle">4</div>
+            <div class="step-title">Rich-block re-authoring</div>
+            <div class="step-desc">Turned flat content into CTA cards, provider-logo grids, forms, contact panels and dated insights across the fidelity backlog.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Quality Gates (dashboard stat grid) -->
+    <div class="slide layout-dashboard">
+      <div class="slide-header">
+        <h4>Quality Gates</h4>
+        <span class="tag">Verification</span>
+      </div>
+      <div class="slide-content">
+        <h2>Every wave verified against the live source, block by block</h2>
+        <div class="stats-grid">
+          <div class="stat-cell">
+            <div class="stat-top"><span class="stat-num">0</span><span class="stat-unit">on live pages</span></div>
+            <div class="stat-name">Console errors</div>
+            <div class="stat-context">Across representatives, on local drafts and the deployed preview / live.</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-top"><span class="stat-num">0</span><span class="stat-unit">images</span></div>
+            <div class="stat-name">Broken resources</div>
+            <div class="stat-context">Checked via img.naturalWidth on the DA-served page, not curl.</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-top"><span class="stat-num">53/53</span><span class="stat-unit">pages</span></div>
+            <div class="stat-name">HTTP 200 live</div>
+            <div class="stat-context">Including 5 formerly-404 uppercase paths, now resolved.</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-top"><span class="stat-num">2</span><span class="stat-unit">breakpoints</span></div>
+            <div class="stat-name">Captured at 1920 + 2560</div>
+            <div class="stat-context">page-fidelity-pass per-block crops at both widths.</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-top"><span class="stat-num">4</span><span class="stat-unit">probes</span></div>
+            <div class="stat-name">Diff instruments</div>
+            <div class="stat-context">Visual, content, typography and block diffs, plus matched crops.</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-top"><span class="stat-num">99+</span><span class="stat-unit">findings</span></div>
+            <div class="stat-name">Triaged to zero</div>
+            <div class="stat-context">Blocker and major findings driven down every fidelity wave.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Lessons Learned (agenda numbered grid, gotchas) -->
+    <div class="slide layout-agenda">
+      <div class="slide-header">
+        <h4>Lessons Learned</h4>
+        <span class="tag">Gotchas</span>
+      </div>
+      <div class="slide-content">
+        <div class="accent-line"></div>
+        <div class="agenda-grid">
+          <div class="agenda-item">
+            <span class="agenda-num">01</span>
+            <div>
+              <h3>DA drops cell-less pictures</h3>
+              <p>A hero row must be row &rarr; cell &rarr; picture, or Document Authoring silently strips the image.</p>
+            </div>
+          </div>
+          <div class="agenda-item">
+            <span class="agenda-num">02</span>
+            <div>
+              <h3>AEM lowercases the content bus</h3>
+              <p>Any uppercase path 404s &mdash; author, link and redirect everything in lowercase.</p>
+            </div>
+          </div>
+          <div class="agenda-item">
+            <span class="agenda-num">03</span>
+            <div>
+              <h3>The disclaimer gate poisons scraping</h3>
+              <p>Suppress the UK-resident gate via cookies; never click Agree &mdash; it redirects every capture to home.</p>
+            </div>
+          </div>
+          <div class="agenda-item">
+            <span class="agenda-num">04</span>
+            <div>
+              <h3>Images need absolute URLs</h3>
+              <p>DA can't sideload root-relative paths &mdash; every image src must be an absolute http(s) URL.</p>
+            </div>
+          </div>
+          <div class="agenda-item">
+            <span class="agenda-num">05</span>
+            <div>
+              <h3>The CDN edge lags fresh block CSS</h3>
+              <p>Verify code on the origin or in the browser, not curl; new styling lands on edge revalidation.</p>
+            </div>
+          </div>
+          <div class="agenda-item">
+            <span class="agenda-num">06</span>
+            <div>
+              <h3>DA strips arbitrary classes</h3>
+              <p>Classes survive only on block wrappers; style content through structural selectors instead.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE: Recent fidelity passes (3 data-rich pages) -->
+    <div class="slide layout-skills">
+      <div class="slide-header">
+        <h4>Recent Fidelity Passes</h4>
+        <span class="tag">3 Data-Rich Pages</span>
+      </div>
+      <div class="slide-content">
+        <h2>Three data-heavy pages taken to full fidelity</h2>
+        <table class="skills-table">
+          <thead>
+            <tr><th style="width:24%">Page</th><th style="width:38%">Gaps vs the live source</th><th style="width:38%">Fix &amp; blocks used</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="phase">About FSSA Investment Managers</td>
+              <td class="role">Interactive Infogram history timeline dropped; register form and Important-Information legal missing; tall untinted hero.</td>
+              <td>New <span class="sk">infogram</span> (teal band) &middot; <span class="sk">panel register</span> <span class="sk">form</span> <span class="sk">panel legal</span> &middot; <span class="sk">hero banner</span></td>
+            </tr>
+            <tr>
+              <td class="phase">Price &amp; performance</td>
+              <td class="role">Five data tables mangled into first-cell-named blocks; performance &amp; historical-NAV charts absent; no in-page nav; fund info / top-10 stacked.</td>
+              <td>New <span class="sk">table</span> &middot; new <span class="sk">chart</span> (Highcharts, self-hosted feed) &middot; new <span class="sk">anchor-nav</span> (sticky) &middot; twin-column layout &middot; <span class="sk">hero banner</span></td>
+            </tr>
+            <tr>
+              <td class="phase">History doesn&rsquo;t repeat&hellip;</td>
+              <td class="role">&ldquo;Portfolio outcomes&rdquo; Infogram dropped; annual-performance table mangled and unstyled; Important Information missing; tall hero.</td>
+              <td>Inline <span class="sk">infogram</span> (new band variant) &middot; <span class="sk">table</span> &middot; <span class="sk">panel legal</span> &middot; <span class="sk">hero banner</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: Outcome & Next Steps (split) -->
+    <div class="slide layout-split">
+      <div class="slide-header">
+        <h4>Outcome &amp; Next Steps</h4>
+        <span class="tag">Status</span>
+      </div>
+      <div class="slide-content">
+        <h2>Live, faithful and complete &mdash; with a documented backlog</h2>
+        <div class="split-body">
+          <div class="split-left">
+            <ul class="insight-list">
+              <li>The full site is live at <strong>main--scottishoriental-demo--jazhou-adobe.aem.live</strong> with faithful design and complete content.</li>
+              <li>Information architecture preserved 1:1; every internal link repointed to a migrated target.</li>
+              <li>Repeatable tooling &mdash; convert, build-da-all, upload and polish scripts &mdash; makes future updates one command.</li>
+            </ul>
+          </div>
+          <div class="split-right">
+            <div class="split-highlight">
+              53 pages migrated, verified block-by-block, and published &mdash; 0 console errors, 0 broken resources.
+              <cite>Final verification &middot; August 2026</cite>
+            </div>
+            <div class="mini-stat-row">
+              <div class="mini-stat"><div class="mini-val">53</div><div class="mini-label">Pages live</div></div>
+              <div class="mini-stat"><div class="mini-val">4</div><div class="mini-label">Migration sessions</div></div>
+              <div class="mini-stat"><div class="mini-val">0</div><div class="mini-label">Errors on live</div></div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.55; margin: 0;">
+              Now delivered in the latest fidelity passes: interactive Infogram diagrams, styled data tables, the live Highcharts price / performance and historical-NAV widgets, a sticky in-page nav, and the Important-Information legal band. Still deferred and documented, not fabricated: team / board photo grids where source data is unavailable.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Navigation -->
+  <div class="slide-counter"><span id="current">1</span> / <span id="total">10</span></div>
+  <div class="keyboard-hint">Use arrow keys to navigate</div>
+  <div class="progress-bar" id="progress"></div>
+  <div class="nav-controls">
+    <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)" aria-label="Previous slide">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)" aria-label="Next slide">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const currentEl = document.getElementById('current');
+    const totalEl = document.getElementById('total');
+    const progressEl = document.getElementById('progress');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    let current = 0;
+    const total = slides.length;
+    totalEl.textContent = total;
+
+    function updateSlide() {
+      slides.forEach((slide, i) => {
+        slide.classList.remove('active', 'prev');
+        if (i === current) {
+          slide.classList.add('active');
+        } else if (i < current) {
+          slide.classList.add('prev');
+        }
+      });
+      currentEl.textContent = current + 1;
+      progressEl.style.width = ((current + 1) / total * 100) + '%';
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === total - 1;
+    }
+
+    function changeSlide(dir) {
+      const next = current + dir;
+      if (next >= 0 && next < total) {
+        current = next;
+        updateSlide();
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        changeSlide(1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        changeSlide(-1);
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        current = 0;
+        updateSlide();
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        current = total - 1;
+        updateSlide();
+      }
+    });
+
+    // Touch support
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      const diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > 50) {
+        changeSlide(diff > 0 ? 1 : -1);
+      }
+    }, { passive: true });
+
+    updateSlide();
+  </script>
+
+</body>
+</html>
