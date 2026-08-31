@@ -1,0 +1,84 @@
+/* sticky in-page section navigation (source "sticky-nav") */
+.anchor-nav-container {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #fff;
+}
+
+.anchor-nav .anchor-nav-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 2px solid var(--brand-purple);
+  border-bottom: 2px solid var(--brand-purple);
+  padding: 6px 0;
+}
+
+.anchor-nav .anchor-nav-bar ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex: 1;
+}
+
+.anchor-nav .anchor-nav-bar a {
+  display: inline-block;
+  padding: 8px 2px;
+  color: var(--brand-purple);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+}
+
+.anchor-nav .anchor-nav-bar a:hover,
+.anchor-nav .anchor-nav-bar a.active {
+  border-bottom-color: var(--brand-purple);
+}
+
+.anchor-nav .anchor-nav-top {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--brand-purple);
+  border-radius: 50%;
+  position: relative;
+}
+
+.anchor-nav .anchor-nav-top::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 9px;
+  height: 9px;
+  border-top: 2px solid var(--brand-purple);
+  border-right: 2px solid var(--brand-purple);
+  transform: translateY(2px) rotate(-45deg);
+}
+
+/* offset jump targets so headings clear the sticky bar */
+.anchor-nav-container ~ div h2[id] {
+  scroll-margin-top: 90px;
+}
+
+/* two data tables side by side (Fund information / Top 10 holdings) */
+main .section:has(.table.fundinfo) .table {
+  margin-top: 8px;
+}
+
+@media (width >= 900px) {
+  main .section:has(.table.fundinfo) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 40px;
+  }
+
+  main .section:has(.table.fundinfo) > *:nth-child(1) { grid-column: 1; grid-row: 1; }
+  main .section:has(.table.fundinfo) > *:nth-child(2) { grid-column: 1; grid-row: 2; }
+  main .section:has(.table.fundinfo) > *:nth-child(3) { grid-column: 2; grid-row: 1; }
+  main .section:has(.table.fundinfo) > *:nth-child(4) { grid-column: 2; grid-row: 2; }
+}

@@ -1,0 +1,19 @@
+/* Highcharts price/performance widget */
+.chart {
+  margin: 16px 0 24px;
+}
+
+.chart .chart-holder {
+  min-height: 440px;
+}
+
+/* let the chart use the brand font + reasonable link colours */
+.chart .highcharts-range-selector-buttons text {
+  font-weight: 600;
+}
+
+.chart .chart-holder > p {
+  padding: 24px;
+  text-align: center;
+  color: var(--dark-color);
+}
